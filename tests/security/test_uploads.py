@@ -1,4 +1,6 @@
 import io
+import os
+import zlib
 from pathlib import Path
 
 import pytest
@@ -16,6 +18,12 @@ def picture(image_format, exif=None):
 
 
 PNG = picture("PNG")
+
+
+def object_stream_pdf(inner, filters=b"/FlateDecode", data=None):
+    data = zlib.compress(inner) if data is None else data
+    head = b"%PDF-1.7\n1 0 obj\n<< /Type /ObjStm /N 1 /First 4 /Filter " + filters + b" >>\nstream\n"
+    return head + data + b"\nendstream\nendobj\n%%EOF\n"
 
 
 def send(client, content, name, task_id=1):
@@ -72,6 +80,42 @@ def test_dangerous_or_invalid_files_are_refused(app, client, task, content, name
 def test_file_size_is_limited(app, client, task):
     response = send(client, PDF + b"0" * (5 * 1024 * 1024), "lourd.pdf")
     assert response.status_code in (413, 422)
+    assert stored_files(app) == []
+
+
+def test_large_real_files_are_accepted(app, client, task):
+    photo = io.BytesIO()
+    Image.frombytes("RGB", (1200, 900), os.urandom(1200 * 900 * 3)).save(photo, format="JPEG", quality=95)
+    assert len(photo.getvalue()) > 1024 * 1024
+    assert send(client, photo.getvalue(), "photo.jpg").status_code == 302
+    assert send(client, PDF.replace(b"%test", b"%" + b"x" * 3 * 1024 * 1024), "gros.pdf").status_code == 302
+    assert len(stored_files(app)) == 2
+
+
+def test_real_and_compressed_pdfs_are_accepted(app, client, task):
+    output = io.BytesIO()
+    Image.new("RGB", (20, 20), "white").save(output, format="PDF")
+    assert send(client, output.getvalue(), "scan.pdf").status_code == 302
+    assert send(client, object_stream_pdf(b"2 0 << /Type /Page >>"), "compresse.pdf").status_code == 302
+
+
+@pytest.mark.parametrize(
+    "content, message",
+    [
+        (object_stream_pdf(b"2 0 << /S /JavaScript /JS (app.alert(1)) >>"), "code ou des fichiers"),
+        (object_stream_pdf(b"2 0 << /Type /EmbeddedFile >>"), "code ou des fichiers"),
+        (object_stream_pdf(b"2 0 << /S /J#61vaScript >>"), "code ou des fichiers"),
+        (object_stream_pdf(b"", b"/LZWDecode", b"donnees"), "empêche de le vérifier"),
+        (object_stream_pdf(b"", data=zlib.compress(b"0" * 30 * 1024 * 1024)), "empêche de le vérifier"),
+        (object_stream_pdf(b"", data=b"pas du zlib"), "empêche de le vérifier"),
+        (b"%PDF-1.7\n<< /Encrypt 5 0 R >>\n%%EOF", "empêche de le vérifier"),
+    ],
+    ids=["javascript", "fichier-cache", "nom-camoufle", "compression-inconnue", "bombe", "flux-casse", "chiffre"],
+)
+def test_pdf_content_hidden_in_compressed_streams_is_found(app, client, task, content, message):
+    response = send(client, content, "cache.pdf")
+    assert response.status_code == 422
+    assert message in response.get_data(as_text=True)
     assert stored_files(app) == []
 
 

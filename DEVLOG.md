@@ -112,3 +112,10 @@ Journal de développement du projet, dans l'ordre chronologique.
 - **IA** : mode lecture seule pour le serveur MCP (`MCP_READ_ONLY=1`).
 - **Dépendances** : toutes épinglées, y compris les indirectes. GitHub Actions lance les tests et `pip-audit` à chaque push, Dependabot propose les mises à jour.
 - 90 tests automatisés, `pip-audit` et `bandit` sans alerte.
+
+### 17h55 · Inspection complète des PDF
+- Les PDF modernes rangent souvent leurs objets dans des flux compressés : un JavaScript caché à l'intérieur échappait à la recherche simple. Ces flux sont maintenant décompressés et analysés, sans antivirus.
+- Plafond de 20 Mo décompressés contre les bombes de décompression. Un PDF chiffré, ou compressé d'une façon que l'application ne sait pas lire, est refusé plutôt qu'accepté sans vérification.
+- Vérifié sur 521 PDF réels (dont 100 avec flux compressés) : aucun refusé à tort. Un PDF avec JavaScript caché dans un flux compressé est bien refusé.
+- **Bug trouvé en testant de vrais fichiers** : tout envoi de plus de 16 Ko était refusé (413), parce que la limite mémoire des formulaires était plus petite que les morceaux lus par Werkzeug (64 Ko). Limite passée à 128 Ko, avec un test qui envoie une photo et un PDF de plusieurs Mo.
+- 99 tests automatisés.

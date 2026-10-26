@@ -136,7 +136,7 @@ pytest
 pip-audit -r requirements-ai.txt
 ```
 
-90 tests couvrent les fonctionnalités, le Kanban et le planner, la validation, les sous-tâches, commentaires et liens, les fichiers joints, le serveur MCP et la sécurité.
+99 tests couvrent les fonctionnalités, le Kanban et le planner, la validation, les sous-tâches, commentaires et liens, les fichiers joints, le serveur MCP et la sécurité.
 
 ## Architecture
 
@@ -157,7 +157,8 @@ app/
 │   ├── forms.py           validation de la tâche
 │   ├── detail_forms.py    validation des sous-tâches, commentaires, liens et fichiers
 │   ├── uploads.py         contrôle et stockage des fichiers joints
-│   ├── sanitize.py        nettoyage des images et contrôle des PDF
+│   ├── sanitize.py        nettoyage des images
+│   ├── pdf_check.py       inspection des PDF, flux compressés compris
 │   ├── removal.py         suppression d'une tâche et de ses fichiers
 │   ├── filters.py         colonnes, vues et filtres autorisés
 │   ├── moments.py         calcul des semaines du planner
@@ -205,7 +206,7 @@ Flask rend les pages côté serveur avec un échappement automatique contre l'in
 | Injection de script (XSS) | Échappement automatique Jinja2, CSP sans script inline, aucun `innerHTML` dans le JavaScript : les textes passent par `textContent` et le rafraîchissement du tableau réutilise le HTML déjà échappé par le serveur. |
 | Requête forgée depuis un autre site (CSRF) | Trois barrières : jeton sur chaque formulaire, cookie `SameSite=Strict`, et refus (403) de toute écriture que le navigateur signale comme venant d'un autre site (`Sec-Fetch-Site`), y compris d'une autre application sur `localhost`. Aucune modification en GET. |
 | Saisies malveillantes | Validation serveur : longueurs, listes de colonnes et de priorités, format de date, tags limités en nombre et en caractères, caractères de contrôle et caractères invisibles d'inversion de texte supprimés (anti-usurpation du type « facture\u202Efdp.exe »), texte normalisé en Unicode NFC, tags en NFKC pour éviter les doublons trompeurs. Requêtes limitées à 16 Ko hors envoi de fichier. Nombre de sous-tâches, commentaires, liens et fichiers plafonné par tâche. |
-| Fichiers joints | PDF, PNG et JPG uniquement, 5 Mo maximum. Le contenu réel est vérifié, pas seulement l'extension. Les images sont entièrement décodées puis réenregistrées avec Pillow : un faux PNG est refusé, et les métadonnées (position GPS, modèle d'appareil) sont supprimées, l'orientation est conservée. Les PDF contenant du JavaScript, des actions de lancement ou des fichiers cachés sont refusés. Protection contre les images géantes (40 millions de pixels maximum). Stockage hors du dossier public sous un nom aléatoire, nom d'origine nettoyé. Téléchargement forcé (`Content-Disposition: attachment`) avec une CSP `sandbox` : un fichier ne peut jamais s'exécuter dans le site. SVG et HTML refusés. |
+| Fichiers joints | PDF, PNG et JPG uniquement, 5 Mo maximum. Le contenu réel est vérifié, pas seulement l'extension. Les images sont entièrement décodées puis réenregistrées avec Pillow : un faux PNG est refusé, et les métadonnées (position GPS, modèle d'appareil) sont supprimées, l'orientation est conservée. Les PDF sont inspectés en profondeur sans antivirus : les flux d'objets compressés sont décompressés (avec un plafond contre les bombes de décompression) et analysés, les noms camouflés sont décodés, et tout PDF contenant du JavaScript, des actions de lancement ou des fichiers cachés est refusé. Un PDF chiffré ou compressé d'une façon qui empêche la vérification est refusé plutôt qu'accepté à l'aveugle. Testé sans faux positif sur 521 PDF réels, dont 100 avec flux compressés. Protection contre les images géantes (40 millions de pixels maximum). Stockage hors du dossier public sous un nom aléatoire, nom d'origine nettoyé. Téléchargement forcé (`Content-Disposition: attachment`) avec une CSP `sandbox` : un fichier ne peut jamais s'exécuter dans le site. SVG et HTML refusés. |
 | Liens | Seuls `http://` et `https://` sont acceptés (pas de `javascript:` ni de `data:`), sans identifiants dans l'adresse. Ouverture dans un nouvel onglet avec `rel="noopener noreferrer nofollow"`. Le vrai domaine est affiché à côté du titre, en Punycode pour les noms internationaux : un lien intitulé « apple.com » qui pointe ailleurs, ou un domaine qui imite un autre avec des lettres cyrilliques, se voit tout de suite. L'application ne visite jamais les liens (pas de risque SSRF). |
 | Accès croisé | Chaque sous-tâche, commentaire, lien ou fichier n'est accessible qu'à travers sa propre tâche. |
 | Abus | 60 écritures par minute, 10 envois de fichiers par minute et 300 requêtes par minute par adresse IP. |
@@ -246,7 +247,7 @@ Atkinson Hyperlegible Next et Atkinson Hyperlegible Mono (Braille Institute), ch
 - Pas de comptes utilisateurs : l'application est mono-utilisateur et prévue pour tourner en local. Une mise en ligne demanderait une authentification et HTTPS (`SESSION_COOKIE_SECURE=1`).
 - `flask run` est un serveur de développement ; en production il faudrait un serveur WSGI comme Gunicorn ou Waitress.
 - La limitation de débit est stockée en mémoire et repart de zéro au redémarrage.
-- Le contrôle des PDF repère le JavaScript, les actions de lancement et les fichiers cachés, y compris écrits de façon détournée, mais pas ceux enfouis dans des parties compressées du fichier : il complète le téléchargement forcé, il ne remplace pas un antivirus.
+- Les refus de sécurité (403, 413, 429, fichiers rejetés) ne sont pas enregistrés dans un journal : utile seulement pour une version en ligne.
 - Les commentaires n'ont pas d'auteur, puisqu'il n'y a pas de comptes : ce sont des notes datées.
 - Le glisser-déposer ne se fait pas au clavier ; au clavier, la colonne et la date se changent dans la fiche de la tâche.
 - Si une base créée par une version précédente du projet est détectée, l'application s'arrête avec un message clair : il suffit de supprimer `instance/tasks.db`.
