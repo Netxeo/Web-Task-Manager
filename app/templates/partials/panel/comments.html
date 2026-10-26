@@ -1,0 +1,29 @@
+{% from "components/icon.html" import icon %}
+{% from "components/fields.html" import field, filter_fields %}
+
+<form class="detail-form" method="post" action="{{ url_for('tasks.add_comment', task_id=editing.id) }}">
+    {{ comment_form.csrf_token }}
+    {{ filter_fields(filters, "filter_") }}
+    {{ field(comment_form.body) }}
+    <button class="button" type="submit">Publier</button>
+</form>
+
+{% if comments %}
+<ul class="detail-list comments">
+    {% for comment in comments %}
+    <li class="comment">
+        <div class="comment-header">
+            <time datetime="{{ comment.created_at }}">{{ comment.created_at[:16] | due_label }}</time>
+            <form method="post" action="{{ url_for('tasks.delete_detail', task_id=editing.id, kind='comments', item_id=comment.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ filter_fields(filters, "filter_") }}
+                <button class="icon-button icon-button-small" type="submit" aria-label="Supprimer ce commentaire">{{ icon("trash-2", 14) }}</button>
+            </form>
+        </div>
+        <p class="comment-body">{{ comment.body }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="detail-empty">Aucun commentaire. Note ici l'avancement, une décision ou une idée.</p>
+{% endif %}

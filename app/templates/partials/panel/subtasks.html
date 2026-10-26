@@ -1,0 +1,36 @@
+{% from "components/icon.html" import icon %}
+{% from "components/fields.html" import field, filter_fields %}
+
+{% set done_count = subtasks | selectattr("is_done") | list | length %}
+{% if subtasks %}
+<div class="subtask-progress">
+    <progress value="{{ done_count }}" max="{{ subtasks | length }}" aria-hidden="true"></progress>
+    <span>{{ done_count }} sur {{ subtasks | length }} faites</span>
+</div>
+<ul class="detail-list">
+    {% for subtask in subtasks %}
+    <li class="detail-item subtask{% if subtask.is_done %} is-done{% endif %}">
+        <form method="post" action="{{ url_for('tasks.toggle_subtask', task_id=editing.id, subtask_id=subtask.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {{ filter_fields(filters, "filter_") }}
+            <button class="check" type="submit" aria-pressed="{{ 'true' if subtask.is_done else 'false' }}" aria-label="Marquer « {{ subtask.title }} » comme {{ 'non faite' if subtask.is_done else 'faite' }}">{{ icon("check", 12) }}</button>
+        </form>
+        <span class="detail-text">{{ subtask.title }}</span>
+        <form method="post" action="{{ url_for('tasks.delete_detail', task_id=editing.id, kind='subtasks', item_id=subtask.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {{ filter_fields(filters, "filter_") }}
+            <button class="icon-button icon-button-small" type="submit" aria-label="Supprimer « {{ subtask.title }} »">{{ icon("x", 14) }}</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="detail-empty">Découpe la tâche en petites étapes : chacune cochée fait avancer la barre.</p>
+{% endif %}
+
+<form class="detail-form" method="post" action="{{ url_for('tasks.add_subtask', task_id=editing.id) }}">
+    {{ subtask_form.csrf_token }}
+    {{ filter_fields(filters, "filter_") }}
+    {{ field(subtask_form.title) }}
+    <button class="button" type="submit">{{ icon("plus", 16) }}Ajouter</button>
+</form>

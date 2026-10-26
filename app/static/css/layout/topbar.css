@@ -1,0 +1,126 @@
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+    min-height: var(--topbar-height);
+    padding: var(--space-3) 3%;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.brand .icon {
+    color: var(--color-primary);
+}
+
+.view-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-lg);
+    background: var(--color-column);
+}
+
+.view-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 36px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.view-tab.is-active {
+    font-weight: 600;
+    color: var(--color-primary);
+    background: var(--color-surface);
+    box-shadow: 0 1px 2px rgba(32, 36, 38, 0.08);
+}
+
+.filters {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+}
+
+.search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search .icon {
+    position: absolute;
+    left: var(--space-3);
+    color: var(--color-ink-muted);
+    pointer-events: none;
+}
+
+.search-input {
+    width: 220px;
+    padding: 0 var(--space-3) 0 36px;
+}
+
+.filter-select {
+    padding: 0 var(--space-2);
+}
+
+.clear-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+}
+
+@media (max-width: 1099px) {
+    .filters {
+        order: 3;
+        flex: 1 1 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .topbar {
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .search {
+        flex: 1 1 100%;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .filter-select {
+        flex: 1;
+    }
+
+    .new-task {
+        margin-left: auto;
+    }
+}

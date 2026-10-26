@@ -1,0 +1,38 @@
+{% from "components/icon.html" import icon %}
+{% from "components/fields.html" import filter_fields %}
+
+{% set view_icons = {"board": "square-kanban", "planner": "calendar-days"} %}
+<header class="topbar">
+    <a class="brand" href="{{ url_for('tasks.index') }}">{{ icon("list-todo", 20) }}<span>Web Task Manager</span></a>
+
+    <nav class="view-tabs" aria-label="Vues">
+        {% for key, label in views.items() %}
+        <a class="view-tab{% if filters.view == key %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, view=key, week='')) }}"{% if filters.view == key %} aria-current="page"{% endif %}>{{ icon(view_icons[key], 16) }}{{ label }}</a>
+        {% endfor %}
+    </nav>
+
+    <form class="filters" method="get" action="{{ url_for('tasks.index') }}" role="search">
+        {{ filter_fields(dict(filters, q="", priority=0, tag="")) }}
+        <div class="search">
+            <label class="visually-hidden" for="search-input">Rechercher une tâche</label>
+            {{ icon("search", 16) }}
+            <input class="search-input" id="search-input" type="search" name="q" value="{{ filters.q }}" maxlength="100" placeholder="Rechercher">
+        </div>
+        <label class="visually-hidden" for="priority-filter">Filtrer par priorité</label>
+        <select class="filter-select" id="priority-filter" name="priority" data-autosubmit>
+            <option value="">Toutes priorités</option>
+            {% for level in [3, 2, 1] %}<option value="{{ level }}"{% if filters.priority == level %} selected{% endif %}>{{ priorities[level] }}</option>{% endfor %}
+        </select>
+        <label class="visually-hidden" for="tag-filter">Filtrer par tag</label>
+        <select class="filter-select" id="tag-filter" name="tag" data-autosubmit>
+            <option value="">Tous les tags</option>
+            {% for tag in tags %}<option value="{{ tag.name }}"{% if filters.tag == tag.name %} selected{% endif %}>#{{ tag.name }} ({{ tag.total }})</option>{% endfor %}
+        </select>
+        <button class="button button-ghost js-hidden" type="submit">Filtrer</button>
+        {% if filters_active %}
+        <a class="clear-filters" href="{{ url_for('tasks.index', **query_args(filters, q='', tag='', priority=0)) }}">{{ icon("x", 14) }}Effacer</a>
+        {% endif %}
+    </form>
+
+    <a class="button new-task" href="{{ url_for('tasks.index', new=1, **query_args(filters)) }}">{{ icon("plus", 18) }}Nouvelle tâche</a>
+</header>

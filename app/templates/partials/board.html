@@ -1,0 +1,37 @@
+{% from "components/icon.html" import icon %}
+{% from "components/task_card.html" import task_card %}
+{% from "components/fields.html" import filter_fields %}
+
+<div class="board">
+    {% for status, label in statuses.items() %}
+    {% set items = columns[status] %}
+    <section class="column column-{{ status }}" aria-labelledby="column-{{ status }}">
+        <header class="column-header">
+            <h2 id="column-{{ status }}">{{ label }}</h2>
+            <span class="count">{{ items | length }}</span>
+            {% if status != "done" %}
+            <a class="icon-button" href="{{ url_for('tasks.index', new=1, status=status, **query_args(filters)) }}" aria-label="Ajouter une tâche dans {{ label }}">{{ icon("plus", 16) }}</a>
+            {% endif %}
+        </header>
+        <ul class="card-list" data-dropzone data-status="{{ status }}" aria-labelledby="column-{{ status }}">
+            {% for task in items %}{{ task_card(task, filters, priorities, editing.id if editing else None) }}{% endfor %}
+        </ul>
+        {% if status != "done" %}
+        <form class="column-add" method="post" action="{{ url_for('tasks.create') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="{{ status }}">
+            {{ filter_fields(filters, "filter_") }}
+            <label class="visually-hidden" for="add-{{ status }}">Nouvelle tâche dans {{ label }}</label>
+            {{ icon("plus", 16) }}
+            <input class="column-add-input" id="add-{{ status }}" name="title" type="text" required maxlength="120" placeholder="Ajouter une tâche" autocomplete="off">
+        </form>
+        {% endif %}
+    </section>
+    {% endfor %}
+</div>
+
+{% if not total %}
+<p class="board-hint">Commence par écrire une tâche dans la colonne « Nouvelles », puis glisse-la de colonne en colonne.</p>
+{% elif filters_active and not columns.values() | map("length") | sum %}
+<p class="board-hint">Aucune tâche ne correspond à ces filtres. <a href="{{ url_for('tasks.index', **query_args(filters, q='', tag='', priority=0)) }}">Effacer les filtres</a></p>
+{% endif %}

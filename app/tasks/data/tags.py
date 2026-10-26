@@ -1,11 +1,12 @@
 import re
+import unicodedata
 
 TAG_PATTERN = re.compile(r"^[\w\- ]{1,24}$")
 MAX_TAGS_PER_TASK = 5
 
 
 def normalize_tag(name):
-    cleaned = " ".join(name.split()).lower()
+    cleaned = " ".join(unicodedata.normalize("NFKC", name).split()).lower()
     return cleaned if TAG_PATTERN.fullmatch(cleaned) else None
 
 

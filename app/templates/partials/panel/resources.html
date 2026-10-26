@@ -1,0 +1,51 @@
+{% from "components/icon.html" import icon %}
+{% from "components/fields.html" import field, filter_fields %}
+
+<h3 class="detail-heading">Fichiers</h3>
+{% if attachments %}
+<ul class="detail-list">
+    {% for attachment in attachments %}
+    <li class="detail-item">
+        {{ icon("file-text" if attachment.mime_type == "application/pdf" else "image", 16) }}
+        <a class="detail-text" href="{{ url_for('tasks.download', task_id=editing.id, attachment_id=attachment.id) }}">{{ attachment.original_name }}</a>
+        <span class="detail-meta">{{ attachment.size | file_size }}</span>
+        <form method="post" action="{{ url_for('tasks.delete_attachment', task_id=editing.id, attachment_id=attachment.id) }}" data-confirm="Supprimer le fichier « {{ attachment.original_name }} » ?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {{ filter_fields(filters, "filter_") }}
+            <button class="icon-button icon-button-small" type="submit" aria-label="Supprimer « {{ attachment.original_name }} »">{{ icon("trash-2", 14) }}</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+<form class="detail-form" method="post" action="{{ url_for('tasks.upload', task_id=editing.id) }}" enctype="multipart/form-data">
+    {{ attachment_form.csrf_token }}
+    {{ filter_fields(filters, "filter_") }}
+    {{ field(attachment_form.file, "PDF, PNG ou JPG, 5 Mo maximum, 5 fichiers par tâche.") }}
+    <button class="button" type="submit" data-busy-label="Envoi…">{{ icon("paperclip", 16) }}Joindre</button>
+</form>
+
+<h3 class="detail-heading">Liens utiles</h3>
+{% if links %}
+<ul class="detail-list">
+    {% for link in links %}
+    <li class="detail-item">
+        {{ icon("link", 16) }}
+        <a class="detail-text" href="{{ link.url }}" target="_blank" rel="noopener noreferrer nofollow">{{ link.label or link.url }}{{ icon("external-link", 12) }}</a>
+        <span class="detail-meta">{{ link.url | link_host }}</span>
+        <form method="post" action="{{ url_for('tasks.delete_detail', task_id=editing.id, kind='links', item_id=link.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {{ filter_fields(filters, "filter_") }}
+            <button class="icon-button icon-button-small" type="submit" aria-label="Supprimer le lien {{ link.label or link.url }}">{{ icon("x", 14) }}</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+<form class="detail-form" method="post" action="{{ url_for('tasks.add_link', task_id=editing.id) }}">
+    {{ link_form.csrf_token }}
+    {{ filter_fields(filters, "filter_") }}
+    {{ field(link_form.url) }}
+    {{ field(link_form.label, "Facultatif.") }}
+    <button class="button" type="submit">{{ icon("plus", 16) }}Ajouter le lien</button>
+</form>

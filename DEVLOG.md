@@ -70,3 +70,45 @@ Journal de développement du projet, dans l'ordre chronologique.
 - Une tâche ajoutée sans échéance depuis « Aujourd'hui » indique qu'elle a rejoint « À faire », pour ne jamais donner l'impression qu'elle a disparu.
 - Réorganisation des dossiers : infrastructure dans `app/core/`, CSS rangé en `base/`, `layout/` et `components/`, licences tierces dans `licenses/`, tests rangés comme le code.
 - 51 tests automatisés.
+
+### 14h50 à 15h30 · Refonte en Kanban (style Bordio / Trello)
+- Retour d'utilisation : une liste unique ne convient pas. Passage à un **tableau Kanban** en colonnes verticales : Nouvelles, Planifiées, En cours, Terminées. Dans chaque colonne, les cartes sont classées automatiquement par priorité.
+- **Planner semaine** : 7 colonnes de jours et une colonne « Sans date ». Les anciennes vues Aujourd'hui et À venir sont remplacées par ce planner.
+- **Glisser-déposer** avec SortableJS (licence MIT, hébergée dans le projet) : fonctionne à la souris et au doigt, contrairement au glisser-déposer natif du navigateur. Après chaque déplacement, la zone du tableau est rechargée depuis le serveur, qui reste la seule source de vérité.
+- **Fiche de tâche à onglets** : Détails, Sous-tâches (avec progression), Commentaires (notes datées), Fichiers et liens. Les onglets marchent aussi sans JavaScript.
+- Nouvelle colonne `status` qui remplace `is_done`, nouvelles tables `subtasks`, `comments`, `links`, `attachments`, toutes reliées à la tâche avec suppression en cascade. Version du schéma vérifiée au démarrage.
+- **Fichiers joints sécurisés** : PDF, PNG, JPG, 5 Mo, signature du contenu vérifiée, nom aléatoire, stockage hors du dossier public, téléchargement forcé avec CSP `sandbox`, fichiers supprimés du disque avec la tâche.
+- **Liens** limités à `http` et `https`, ouverts avec `noopener noreferrer`.
+- Les requêtes classiques restent limitées à 16 Ko : seule la route d'envoi de fichier accepte un corps plus gros.
+- Code découpé : `tasks/data/` (requêtes SQL), `tasks/routes/` (routes), formulaires de détail séparés.
+- Serveur MCP mis à jour : déplacer une tâche, ajouter une sous-tâche ou un commentaire.
+- Design : cartes de couleur unie selon la priorité, sans barre colorée sur le côté, contrastes de texte de 5:1 minimum.
+- 74 tests automatisés, `pip-audit` sans vulnérabilité.
+
+### 15h35 · Palette plus douce
+- Retour d'utilisation : gris trop sombres et couleurs trop ternes.
+- Gris éclaircis (fond `#F8FAFB`, colonnes `#F0F3F6`, bordures `#D5DDE2`).
+- Cartes en pastels plus lumineux : Haute `#FFE3DE`, Moyenne `#FFF1CF`, Basse `#DFEEFF`, Aucune blanc.
+- La couleur vive passe sur les icônes et le cercle de la carte ; le texte reste foncé et neutre. Contraste du texte toujours au-dessus de 5:1, icônes au-dessus de 3:1.
+
+### 15h50 · Audit de sécurité
+- Relecture complète du code, avec `bandit` et `pyflakes` en plus des tests.
+- Identifiants trop grands dans l'URL (ex. `/tasks/99999999999999999999`) : ils provoquaient une erreur 500. Un convertisseur de route limite maintenant les identifiants à l'intervalle accepté par SQLite, réponse 404.
+- Semaine du planner hors calendrier (`week=9999-12-31`) : retour à la semaine courante au lieu d'une erreur.
+- Limites des sous-tâches, commentaires, liens et fichiers vérifiées dans la requête `INSERT` elle-même, pour qu'aucun envoi simultané ne puisse les dépasser.
+- Requêtes de suppression des détails écrites en dur, sans construction de chaîne.
+- Glisser-déposer : si le réseau coupe, la page se recharge au lieu de rester dans un état faux.
+- Corps envoyés sans `Content-Length` : la lecture s'arrête à 16 Ko.
+- 77 tests automatisés, `pip-audit` sans vulnérabilité.
+
+### 16h00 · Audit complet avec le skill de sécurité
+- Passage en revue des 25 catégories du skill `skill-file-security`, en ne gardant que celles qui concernent le projet.
+- **Fichiers joints** : les images sont décodées puis réenregistrées avec Pillow. Un faux PNG est refusé, les métadonnées (GPS, appareil) disparaissent, l'orientation de la photo est gardée, les images géantes sont refusées. Les PDF avec JavaScript, actions de lancement ou fichiers cachés sont refusés, même quand le mot est camouflé (`/J#61vaScript`).
+- **Noms trompeurs** : les caractères invisibles d'inversion de texte sont supprimés des titres, commentaires et noms de fichiers (`facture[inversion]fdp.exe` devient `facturefdp.exe`). Tags normalisés en Unicode pour éviter deux tags identiques à l'œil.
+- **Liens** : le vrai domaine s'affiche à côté du titre, en Punycode pour les domaines qui imitent un autre avec des lettres cyrilliques.
+- **Requêtes d'un autre site** : toute écriture signalée par le navigateur comme venant d'un autre site est refusée (403), en plus du jeton CSRF. Cookie de session passé en `SameSite=Strict`.
+- **En-têtes** : Trusted Types dans la CSP, `Cross-Origin-Embedder-Policy`, pages jamais mises en cache.
+- **SQL** : plus aucune requête assemblée à l'exécution, les filtres facultatifs passent par des paramètres nommés. `bandit` ne signale plus rien.
+- **IA** : mode lecture seule pour le serveur MCP (`MCP_READ_ONLY=1`).
+- **Dépendances** : toutes épinglées, y compris les indirectes. GitHub Actions lance les tests et `pip-audit` à chaque push, Dependabot propose les mises à jour.
+- 90 tests automatisés, `pip-audit` et `bandit` sans alerte.

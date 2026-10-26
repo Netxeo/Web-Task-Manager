@@ -1,0 +1,198 @@
+.priority-0 {
+    --priority-color: var(--priority-accent-0);
+    --card-tint: var(--tint-0);
+}
+
+.priority-1 {
+    --priority-color: var(--priority-accent-1);
+    --card-tint: var(--tint-1);
+}
+
+.priority-2 {
+    --priority-color: var(--priority-accent-2);
+    --card-tint: var(--tint-2);
+}
+
+.priority-3 {
+    --priority-color: var(--priority-accent-3);
+    --card-tint: var(--tint-3);
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    background: var(--card-tint);
+    box-shadow: 0 1px 3px rgba(32, 36, 38, 0.07), 0 1px 1px rgba(32, 36, 38, 0.03);
+    cursor: grab;
+    transition: box-shadow 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+}
+
+.card.is-selected {
+    box-shadow: 0 8px 24px rgba(32, 36, 38, 0.16);
+    transform: translateY(-2px);
+}
+
+.card.is-done {
+    background: var(--color-surface);
+}
+
+.card.is-done .card-link,
+.card.is-done .chip,
+.card.is-done .counter {
+    color: var(--color-card-muted);
+}
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+.card-link {
+    flex: 1;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+}
+
+.is-done .card-link {
+    font-weight: 400;
+    text-decoration: line-through;
+}
+
+.card-toggle {
+    position: relative;
+    z-index: 1;
+    margin: -12px 0 -12px -12px;
+}
+
+.check {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    color: transparent;
+    background: none;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.check::before {
+    content: "";
+    grid-area: 1 / 1;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--priority-color, var(--color-control));
+    border-radius: 50%;
+    background: var(--color-surface);
+    transition: background-color 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+
+.check .icon {
+    grid-area: 1 / 1;
+    z-index: 1;
+}
+
+.check:hover .icon {
+    color: var(--priority-color, var(--color-control));
+}
+
+.check:active::before {
+    transform: scale(0.88);
+}
+
+.is-done .check::before {
+    border-color: var(--color-done-strong);
+    background: var(--color-done-strong);
+}
+
+.is-done .check .icon {
+    color: #fff;
+}
+
+.card-description {
+    overflow: hidden;
+    font-size: var(--text-sm);
+    color: var(--color-card-muted);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.card-meta,
+.card-counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+}
+
+.chip,
+.counter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.8125rem;
+    color: var(--color-card-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.chip-priority {
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.chip .icon,
+.counter .icon {
+    color: var(--priority-color);
+}
+
+.chip-due.is-soon {
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.chip-due.is-soon .icon {
+    color: var(--color-warning);
+}
+
+.chip-due.is-overdue,
+.chip-due.is-overdue .icon {
+    font-weight: 600;
+    color: var(--color-overdue);
+}
+
+.counter.is-complete {
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.card-ghost {
+    opacity: 0.35;
+}
+
+.card-chosen {
+    box-shadow: var(--shadow-soft);
+}
+
+.card-drag {
+    transform: rotate(2deg);
+}

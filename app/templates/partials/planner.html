@@ -1,0 +1,33 @@
+{% from "components/icon.html" import icon %}
+{% from "components/task_card.html" import task_card %}
+
+{% set first_day, last_day = days[0][0], days[-1][0] %}
+<div class="planner-nav">
+    <a class="icon-button" href="{{ url_for('tasks.index', **query_args(filters, week=previous_week)) }}" aria-label="Semaine précédente">{{ icon("chevron-left") }}</a>
+    <h1 class="planner-title">Semaine du {{ first_day | short_date }} au {{ last_day | short_date }}</h1>
+    <a class="icon-button" href="{{ url_for('tasks.index', **query_args(filters, week=next_week)) }}" aria-label="Semaine suivante">{{ icon("chevron-right") }}</a>
+    {% if filters.week %}<a class="button button-ghost" href="{{ url_for('tasks.index', **query_args(filters, week='')) }}">Cette semaine</a>{% endif %}
+</div>
+
+<div class="planner">
+    <section class="column planner-backlog" aria-labelledby="day-backlog">
+        <header class="column-header">
+            <h2 id="day-backlog">Sans date</h2>
+            <span class="count">{{ backlog | length }}</span>
+        </header>
+        <ul class="card-list" data-dropzone data-day="" aria-labelledby="day-backlog">
+            {% for task in backlog %}{{ task_card(task, filters, priorities, editing.id if editing else None) }}{% endfor %}
+        </ul>
+    </section>
+    {% for day, items in days %}
+    <section class="column planner-day{% if day is today %} is-today{% endif %}" aria-labelledby="day-{{ day }}">
+        <header class="column-header">
+            <h2 id="day-{{ day }}"><time datetime="{{ day }}">{{ day | day_label }}</time>{% if day is today %}<span class="visually-hidden"> (aujourd'hui)</span>{% endif %}</h2>
+            <span class="count">{{ items | length }}</span>
+        </header>
+        <ul class="card-list" data-dropzone data-day="{{ day }}" aria-labelledby="day-{{ day }}">
+            {% for task in items %}{{ task_card(task, filters, priorities, editing.id if editing else None) }}{% endfor %}
+        </ul>
+    </section>
+    {% endfor %}
+</div>

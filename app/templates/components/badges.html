@@ -2,18 +2,14 @@
 
 {% macro priority_badge(level, priorities) -%}
 {% if level %}
-<span class="badge badge-priority priority-{{ level }}">{{ icon("flag", 14) }}{{ priorities[level] }}</span>
+<span class="chip chip-priority">{{ icon("flag", 12) }}{{ priorities[level] }}</span>
 {% endif %}
-{%- endmacro %}
-
-{% macro tag_chip(name, filters) -%}
-<a class="badge badge-tag" href="{{ url_for('tasks.index', **query_args(filters, tag=name)) }}">#{{ name }}</a>
 {%- endmacro %}
 
 {% macro due_badge(task) -%}
 {% if task.due_at %}
-<span class="badge badge-due{% if task is overdue %} is-overdue{% elif task is due_soon %} is-soon{% endif %}">
-    {{ icon("calendar-clock", 14) }}<time datetime="{{ task.due_at }}">{{ task.due_at | due_label }}</time>{% if task is overdue %}<span class="visually-hidden"> (en retard)</span>{% endif %}
+<span class="chip chip-due{% if task is overdue %} is-overdue{% elif task is due_soon %} is-soon{% endif %}">
+    {{ icon("calendar-clock", 12) }}<time datetime="{{ task.due_at }}">{{ task.due_at | due_label }}</time>{% if task is overdue %}<span class="visually-hidden"> (en retard)</span>{% endif %}
 </span>
 {% endif %}
 {%- endmacro %}

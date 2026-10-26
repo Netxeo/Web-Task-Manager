@@ -3,6 +3,7 @@ from flask_wtf.csrf import CSRFError
 
 ERROR_MESSAGES = {
     400: "La requête est invalide ou a expiré. Recharge la page et réessaie.",
+    403: "Cette action doit venir de l'application elle-même.",
     404: "Cette page ou cette tâche n'existe pas.",
     405: "Cette action n'est pas autorisée.",
     413: "Le contenu envoyé est trop volumineux.",

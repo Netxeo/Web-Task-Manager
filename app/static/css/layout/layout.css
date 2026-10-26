@@ -1,12 +1,13 @@
 .app {
     display: flex;
+    flex-direction: column;
     min-height: 100dvh;
 }
 
 .main {
     flex: 1;
     min-width: 0;
-    padding: var(--space-8) 5% var(--space-12);
+    padding: var(--space-6) 3% var(--space-12);
 }
 
 .skip-link {
@@ -50,6 +51,30 @@
     transform: translateY(8px);
 }
 
+.icon-button {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    color: var(--color-ink-muted);
+    background: none;
+    cursor: pointer;
+}
+
+.icon-button:hover {
+    color: var(--color-ink);
+    background: var(--color-column);
+}
+
+.icon-button-small {
+    width: 32px;
+    height: 32px;
+}
+
 .error-page {
     display: flex;
     flex-direction: column;
@@ -65,11 +90,7 @@
 }
 
 @media (max-width: 767px) {
-    .app {
-        flex-direction: column;
-    }
-
     .main {
-        padding: var(--space-6) var(--space-4) var(--space-12);
+        padding: var(--space-4) var(--space-4) var(--space-12);
     }
 }

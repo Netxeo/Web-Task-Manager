@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from urllib.parse import urlsplit
 
 from app.tasks import bp
 from app.tasks.filters import query_args
@@ -7,14 +8,7 @@ from app.tasks.forms import DUE_FORMAT
 bp.add_app_template_global(query_args)
 
 DAYS = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
-MONTH_NAMES = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
 MONTHS = ("janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc.")
-
-
-@bp.app_template_global("today_label")
-def today_label():
-    today = date.today()
-    return f"{DAYS[today.weekday()]} {today.day} {MONTH_NAMES[today.month - 1]}"
 
 
 def parse_due(value):
@@ -42,3 +36,32 @@ def is_due_soon(task):
     if not task["due_at"] or task["is_done"]:
         return False
     return datetime.now() <= parse_due(task["due_at"]) <= datetime.now() + timedelta(hours=24)
+
+
+@bp.app_template_filter("day_label")
+def day_label(day):
+    return f"{DAYS[day.weekday()][:3].capitalize()} {day.day}"
+
+
+@bp.app_template_filter("short_date")
+def short_date(day):
+    return f"{day.day} {MONTHS[day.month - 1]}"
+
+
+@bp.app_template_test("today")
+def is_today(day):
+    return day == date.today()
+
+
+@bp.app_template_filter("file_size")
+def file_size(size):
+    return f"{size / 1024:.0f} Ko" if size < 1024 * 1024 else f"{size / 1024 / 1024:.1f} Mo".replace(".", ",")
+
+
+@bp.app_template_filter("link_host")
+def link_host(url):
+    host = urlsplit(url).hostname or ""
+    try:
+        return host.encode("idna").decode("ascii")
+    except UnicodeError:
+        return host

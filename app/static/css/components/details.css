@@ -1,0 +1,148 @@
+.tabs {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 40px;
+    padding: 0 var(--space-2);
+    border-bottom: 2px solid transparent;
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.tab[aria-selected="true"] {
+    font-weight: 600;
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.tabpanel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.tabpanel[hidden] {
+    display: none;
+}
+
+.detail-heading {
+    font-size: var(--text-md);
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.detail-item > .icon {
+    color: var(--color-ink-muted);
+}
+
+.detail-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+a.detail-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.detail-meta {
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+}
+
+.subtask .check {
+    --priority-color: var(--priority-accent-0);
+}
+
+.subtask.is-done .detail-text {
+    color: var(--color-ink-muted);
+    text-decoration: line-through;
+}
+
+.subtask-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+}
+
+.subtask-progress progress {
+    flex: 1;
+    height: 6px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-line-soft);
+    appearance: none;
+}
+
+.subtask-progress progress::-webkit-progress-bar {
+    background: var(--color-line-soft);
+}
+
+.subtask-progress progress::-webkit-progress-value {
+    background: var(--color-done-strong);
+}
+
+.subtask-progress progress::-moz-progress-bar {
+    background: var(--color-done-strong);
+}
+
+.detail-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+.detail-form .field {
+    width: 100%;
+}
+
+.detail-empty {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+}
+
+.comment {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+}
+
+.comment-body {
+    white-space: pre-wrap;
+}

@@ -1,0 +1,59 @@
+.planner-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.planner-title {
+    font-size: var(--text-lg);
+}
+
+.planner-nav .button {
+    margin-left: auto;
+}
+
+.planner {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(176px, 1fr));
+    gap: var(--space-3);
+    align-items: start;
+    overflow-x: auto;
+    padding-bottom: var(--space-4);
+}
+
+.planner-backlog {
+    background: var(--color-line-soft);
+}
+
+.planner-day.is-today {
+    background: var(--tint-1);
+}
+
+.planner-day.is-today h2 {
+    color: var(--color-primary);
+}
+
+.planner .card-description,
+.planner .card-meta .chip-tag {
+    display: none;
+}
+
+.planner .card {
+    padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+.planner .card-link {
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 767px) {
+    .planner {
+        grid-template-columns: repeat(8, 72vw);
+        scroll-snap-type: x mandatory;
+    }
+
+    .planner .column {
+        scroll-snap-align: start;
+    }
+}

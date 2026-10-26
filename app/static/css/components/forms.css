@@ -1,7 +1,6 @@
 .search-input,
-.sort-select,
-.field-input,
-.quick-add-input {
+.filter-select,
+.field-input {
     min-height: 40px;
     border: 1px solid var(--color-control);
     border-radius: var(--radius-md);
@@ -100,6 +99,10 @@ textarea.field-input {
 
 .button-danger:hover {
     background: #a5362f;
+}
+
+input[type="file"].field-input {
+    padding: var(--space-2);
 }
 
 @media (max-width: 767px) {

@@ -11,6 +11,7 @@ def build_app(tmp_path, **overrides):
             "TESTING": True,
             "SECRET_KEY": TEST_SECRET,
             "DATABASE": str(tmp_path / "test.db"),
+            "UPLOAD_FOLDER": str(tmp_path / "uploads"),
             "WTF_CSRF_ENABLED": False,
             "RATELIMIT_ENABLED": False,
             **overrides,

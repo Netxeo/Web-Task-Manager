@@ -4,6 +4,7 @@ from flask import Flask
 
 from app.core import db, errors, security
 from app.core.config import Config
+from app.core.converters import IdConverter
 from app.core.extensions import csrf, limiter
 from app.tasks import bp as tasks_bp
 
@@ -17,11 +18,12 @@ def create_app(overrides=None):
     Config.validate(app.config)
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
 
+    security.init_app(app)
     csrf.init_app(app)
     limiter.init_app(app)
     db.init_app(app)
-    security.init_app(app)
     errors.init_app(app)
+    app.url_map.converters["id"] = IdConverter
     app.register_blueprint(tasks_bp)
 
     return app

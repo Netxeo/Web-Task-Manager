@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -27,33 +28,51 @@ def run(action, *args):
         return action(*args)
 
 
-@server.tool(description="Liste les tâches. view : today (en retard et du jour), upcoming (7 prochains jours), todo (toutes les tâches à faire) ou done. sort : recent, due, priority ou title. " + PRIORITY_HELP, annotations=read_only)
-def list_tasks(view="todo", query="", tag="", priority="", sort="recent"):
-    return run(tools.list_tasks, view, query, tag, str(priority), sort)
+STATUS_HELP = "Colonnes : new (nouvelles), scheduled (planifiées), in_progress (en cours), done (terminées)."
 
 
-@server.tool(description="Affiche une tâche à partir de son identifiant.", annotations=read_only)
+@server.tool(description=f"Liste les tâches du tableau Kanban, classées par priorité. status vide = toutes les colonnes. {STATUS_HELP} {PRIORITY_HELP}", annotations=read_only)
+def list_tasks(status="", query="", tag="", priority=""):
+    return run(tools.list_tasks, status, query, tag, str(priority))
+
+
+@server.tool(description="Affiche une tâche avec ses sous-tâches, commentaires et liens.", annotations=read_only)
 def get_task(task_id):
     return run(tools.get_task, task_id)
 
 
-@server.tool(description=f"Crée une tâche. Titre obligatoire, 120 caractères maximum. {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
-def create_task(title, description="", priority="0", due_at="", tags=""):
-    values = {"title": title, "description": description, "priority": priority, "due_at": due_at, "tags": tags}
+@server.tool(description=f"Crée une tâche. Titre obligatoire, 120 caractères maximum. {STATUS_HELP} {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
+def create_task(title, description="", status="new", priority="0", due_at="", tags=""):
+    values = {"title": title, "description": description, "status": status, "priority": priority, "due_at": due_at, "tags": tags}
     return run(tools.create_task, values)
 
 
-@server.tool(description=f"Modifie une tâche. Seuls les champs fournis changent. {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
-def update_task(task_id, title=None, description=None, priority=None, due_at=None, tags=None):
-    changes = {"title": title, "description": description, "priority": priority, "due_at": due_at, "tags": tags}
+@server.tool(description=f"Modifie une tâche. Seuls les champs fournis changent. {STATUS_HELP} {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
+def update_task(task_id, title=None, description=None, status=None, priority=None, due_at=None, tags=None):
+    changes = {"title": title, "description": description, "status": status, "priority": priority, "due_at": due_at, "tags": tags}
     return run(tools.update_task, task_id, changes)
 
 
-@server.tool(description="Marque une tâche comme terminée (done=true) ou à faire (done=false).", annotations=ToolAnnotations(idempotent_hint=True))
-def set_task_done(task_id, done=True):
-    return run(tools.set_done, task_id, str(done).lower() in ("true", "1", "oui"))
+@server.tool(description=f"Déplace une tâche dans une autre colonne du Kanban. {STATUS_HELP}", annotations=ToolAnnotations(idempotent_hint=True))
+def move_task(task_id, status):
+    return run(tools.move_task, task_id, status)
 
 
-@server.tool(description="Supprime définitivement une tâche.", annotations=ToolAnnotations(destructive_hint=True))
+@server.tool(description="Ajoute une sous-tâche (120 caractères maximum).")
+def add_subtask(task_id, title):
+    return run(tools.add_subtask, task_id, title)
+
+
+@server.tool(description="Ajoute un commentaire daté à une tâche (1000 caractères maximum).")
+def add_comment(task_id, body):
+    return run(tools.add_comment, task_id, body)
+
+
+@server.tool(description="Supprime définitivement une tâche avec ses sous-tâches, commentaires, liens et fichiers.", annotations=ToolAnnotations(destructive_hint=True))
 def delete_task(task_id):
     return run(tools.delete_task, task_id)
+
+
+if os.environ.get("MCP_READ_ONLY", "0") == "1":
+    for name in ("create_task", "update_task", "move_task", "add_subtask", "add_comment", "delete_task"):
+        server.remove_tool(name)
