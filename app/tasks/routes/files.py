@@ -6,7 +6,7 @@ from app.tasks import bp, uploads
 from app.tasks.data import attachments
 from app.tasks.detail_forms import AttachmentForm
 from app.tasks.forms import TaskForm, form_values
-from app.tasks.routes.common import back_to_board, find_task_or_404, render_page, submitted_filters
+from app.tasks.routes.common import back_to_board, edit_panel, find_task_or_404, render_page, submitted_filters
 
 
 @bp.post("/tasks/<id:task_id>/attachments")
@@ -25,7 +25,9 @@ def upload(task_id):
     except ValueError as error:
         form.file.errors = [str(error)]
         edit_form = TaskForm(formdata=None, data=form_values(task))
-        return render_page(submitted_filters(), "edit", edit_form, task, "resources", {"attachment_form": form}, 422)
+        return render_page(
+            submitted_filters(), edit_panel(task, edit_form, "resources", {"attachment_form": form}), 422
+        )
     flash("Fichier ajouté.")
     return back_to_board(task_id, "resources")
 

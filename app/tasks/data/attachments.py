@@ -5,10 +5,14 @@ MAX_PER_TASK = 5
 
 
 def list_attachments(task_id):
-    return get_db().execute(
-        "SELECT id, original_name, mime_type, size, created_at FROM attachments WHERE task_id = ? ORDER BY id",
-        (task_id,),
-    ).fetchall()
+    return (
+        get_db()
+        .execute(
+            "SELECT id, original_name, mime_type, size, created_at FROM attachments WHERE task_id = ? ORDER BY id",
+            (task_id,),
+        )
+        .fetchall()
+    )
 
 
 def add_attachment(task_id, original_name, stored_name, mime_type, size):
@@ -23,10 +27,14 @@ def add_attachment(task_id, original_name, stored_name, mime_type, size):
 
 
 def get_attachment(task_id, attachment_id):
-    return get_db().execute(
-        "SELECT id, original_name, stored_name, mime_type FROM attachments WHERE id = ? AND task_id = ?",
-        (attachment_id, task_id),
-    ).fetchone()
+    return (
+        get_db()
+        .execute(
+            "SELECT id, original_name, stored_name, mime_type FROM attachments WHERE id = ? AND task_id = ?",
+            (attachment_id, task_id),
+        )
+        .fetchone()
+    )
 
 
 def delete_attachment(task_id, attachment_id):

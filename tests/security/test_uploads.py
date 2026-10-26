@@ -64,7 +64,11 @@ def test_valid_files_are_stored_under_random_names(app, client, task):
         (b"", "vide.pdf", "vide"),
         (b"\x89PNG\r\n\x1a\n<script>alert(1)</script>", "faux.png", "pas une vraie image"),
         (b"\xff\xd8\xff<?php system($_GET[0]); ?>", "faux.jpg", "pas une vraie image"),
-        (b"%PDF-1.4\n<< /OpenAction << /S /JavaScript /JS (app.alert(1)) >> >>\n%%EOF", "script.pdf", "code ou des fichiers"),
+        (
+            b"%PDF-1.4\n<< /OpenAction << /S /JavaScript /JS (app.alert(1)) >> >>\n%%EOF",
+            "script.pdf",
+            "code ou des fichiers",
+        ),
         (b"%PDF-1.4\n<< /S /J#61vaScript >>\n%%EOF", "cache.pdf", "code ou des fichiers"),
         (b"%PDF-1.4\n<< /Type /Launch /F (calc.exe) >>\n%%EOF", "lance.pdf", "code ou des fichiers"),
         (b"%PDF-1.4\nsans fin", "coupe.pdf", "incomplet"),

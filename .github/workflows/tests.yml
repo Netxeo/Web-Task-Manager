@@ -20,5 +20,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: ruff format --check .
       - run: pytest -q
       - run: pip-audit -r requirements.txt -r requirements-ai.txt

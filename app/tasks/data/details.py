@@ -21,15 +21,14 @@ def delete(kind, task_id, item_id):
 
 
 def list_subtasks(task_id):
-    return get_db().execute(
-        "SELECT id, title, is_done FROM subtasks WHERE task_id = ? ORDER BY id", (task_id,)
-    ).fetchall()
+    return (
+        get_db().execute("SELECT id, title, is_done FROM subtasks WHERE task_id = ? ORDER BY id", (task_id,)).fetchall()
+    )
 
 
 def add_subtask(task_id, title):
     return write(
-        "INSERT INTO subtasks (task_id, title) SELECT ?, ? "
-        "WHERE (SELECT COUNT(*) FROM subtasks WHERE task_id = ?) < ?",
+        "INSERT INTO subtasks (task_id, title) SELECT ?, ? WHERE (SELECT COUNT(*) FROM subtasks WHERE task_id = ?) < ?",
         (task_id, title, task_id, LIMITS["subtasks"]),
     )
 
@@ -39,9 +38,11 @@ def toggle_subtask(task_id, subtask_id):
 
 
 def list_comments(task_id):
-    return get_db().execute(
-        "SELECT id, body, created_at FROM comments WHERE task_id = ? ORDER BY id DESC", (task_id,)
-    ).fetchall()
+    return (
+        get_db()
+        .execute("SELECT id, body, created_at FROM comments WHERE task_id = ? ORDER BY id DESC", (task_id,))
+        .fetchall()
+    )
 
 
 def add_comment(task_id, body):

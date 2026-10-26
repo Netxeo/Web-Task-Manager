@@ -3,8 +3,12 @@ from app.tasks.data import tasks as task_data
 
 def test_create_task_with_all_fields(app, add_task, page):
     response = add_task(
-        "Préparer la démo", description="Script de 5 minutes", status="in_progress",
-        priority="3", due_at="2030-01-15T09:30", tags="Travail, démo",
+        "Préparer la démo",
+        description="Script de 5 minutes",
+        status="in_progress",
+        priority="3",
+        due_at="2030-01-15T09:30",
+        tags="Travail, démo",
     )
     assert response.status_code == 302
     with app.app_context():
@@ -29,12 +33,19 @@ def test_new_task_with_date_is_scheduled(app, add_task):
 
 def test_update_task(app, client, add_task):
     add_task("Ancien titre", tags="a, b")
-    response = client.post("/tasks/1", data={"title": "Nouveau titre", "status": "in_progress", "priority": "2", "tags": "b, c"})
+    response = client.post(
+        "/tasks/1", data={"title": "Nouveau titre", "status": "in_progress", "priority": "2", "tags": "b, c"}
+    )
     assert response.status_code == 302
     with app.app_context():
         task = task_data.get_task(1)
         tags = [row["name"] for row in task_data.list_tags()]
-    assert (task["title"], task["status"], task["priority"], task["tags"]) == ("Nouveau titre", "in_progress", 2, ["b", "c"])
+    assert (task["title"], task["status"], task["priority"], task["tags"]) == (
+        "Nouveau titre",
+        "in_progress",
+        2,
+        ["b", "c"],
+    )
     assert tags == ["b", "c"]
 
 

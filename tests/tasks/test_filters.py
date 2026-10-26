@@ -9,7 +9,9 @@ def seeded(add_task):
 
 
 def titles(html):
-    return [title for title in ("Écrire le rapport", "Arroser les plantes", "Payer 100% de la facture") if title in html]
+    return [
+        title for title in ("Écrire le rapport", "Arroser les plantes", "Payer 100% de la facture") if title in html
+    ]
 
 
 def test_search_matches_title_and_description(seeded, page):

@@ -5,7 +5,8 @@ from app.tasks.data import tags
 
 SELECT_TASKS = (
     "SELECT t.id, t.title, t.description, t.status, t.priority, t.due_at, t.completed_at, t.created_at, t.updated_at, "
-    "(SELECT group_concat(g.name, ',') FROM task_tags tt JOIN tags g ON g.id = tt.tag_id WHERE tt.task_id = t.id) AS tag_names, "
+    "(SELECT group_concat(g.name, ',') FROM task_tags tt JOIN tags g ON g.id = tt.tag_id "
+    "WHERE tt.task_id = t.id) AS tag_names, "
     "(SELECT COUNT(*) FROM subtasks s WHERE s.task_id = t.id) AS subtasks_total, "
     "(SELECT COUNT(*) FROM subtasks s WHERE s.task_id = t.id AND s.is_done = 1) AS subtasks_done, "
     "(SELECT COUNT(*) FROM comments c WHERE c.task_id = t.id) AS comments_count, "
@@ -14,7 +15,8 @@ SELECT_TASKS = (
     "FROM tasks t "
     "WHERE (:task_id IS NULL OR t.id = :task_id) "
     "AND (:pattern IS NULL OR t.title LIKE :pattern ESCAPE '\\' OR t.description LIKE :pattern ESCAPE '\\') "
-    "AND (:tag IS NULL OR EXISTS (SELECT 1 FROM task_tags tt JOIN tags g ON g.id = tt.tag_id WHERE tt.task_id = t.id AND g.name = :tag)) "
+    "AND (:tag IS NULL OR EXISTS (SELECT 1 FROM task_tags tt JOIN tags g ON g.id = tt.tag_id "
+    "WHERE tt.task_id = t.id AND g.name = :tag)) "
     "AND (:priority = 0 OR t.priority = :priority) "
     "AND (:start IS NULL OR t.due_at >= :start) "
     "AND (:end IS NULL OR t.due_at < :end) "
@@ -77,8 +79,16 @@ def create_task(data):
         cursor = db.execute(
             "INSERT INTO tasks (title, description, status, priority, due_at, completed_at, created_at, updated_at) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (data["title"], data["description"], status, data["priority"], data["due_at"],
-             timestamp if status == "done" else None, timestamp, timestamp),
+            (
+                data["title"],
+                data["description"],
+                status,
+                data["priority"],
+                data["due_at"],
+                timestamp if status == "done" else None,
+                timestamp,
+                timestamp,
+            ),
         )
         tags.set_task_tags(db, cursor.lastrowid, data["tags"])
     return cursor.lastrowid
@@ -120,7 +130,9 @@ def schedule(task_id, day):
         due_at, status = f"{day}T{time}", "scheduled" if task["status"] == "new" else task["status"]
     db = get_db()
     with db:
-        db.execute("UPDATE tasks SET due_at = ?, status = ?, updated_at = ? WHERE id = ?", (due_at, status, now(), task_id))
+        db.execute(
+            "UPDATE tasks SET due_at = ?, status = ?, updated_at = ? WHERE id = ?", (due_at, status, now(), task_id)
+        )
     return True
 
 

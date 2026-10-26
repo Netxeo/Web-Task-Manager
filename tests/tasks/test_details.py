@@ -51,7 +51,14 @@ def test_empty_comment_is_refused(client, task):
 
 @pytest.mark.parametrize(
     "url",
-    ["javascript:alert(1)", "data:text/html,<b>x</b>", "ftp://example.com", "https://user:pass@example.com", "https://", "https://exa mple.com"],
+    [
+        "javascript:alert(1)",
+        "data:text/html,<b>x</b>",
+        "ftp://example.com",
+        "https://user:pass@example.com",
+        "https://",
+        "https://exa mple.com",
+    ],
 )
 def test_dangerous_links_are_refused(app, client, task, url):
     assert client.post("/tasks/1/links", data={"url": url}).status_code == 422

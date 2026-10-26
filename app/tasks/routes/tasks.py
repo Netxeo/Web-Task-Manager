@@ -9,7 +9,14 @@ from app.tasks.filters import STATUSES
 from app.tasks.forms import TaskForm
 from app.tasks.removal import delete_task_with_files
 from app.tasks.routes.common import (
-    WRITE_LIMIT, back_to_board, find_task_or_404, render_page, submitted_filters, wants_json,
+    WRITE_LIMIT,
+    back_to_board,
+    edit_panel,
+    find_task_or_404,
+    new_panel,
+    render_page,
+    submitted_filters,
+    wants_json,
 )
 
 
@@ -18,7 +25,7 @@ from app.tasks.routes.common import (
 def create():
     form = TaskForm()
     if not form.validate():
-        return render_page(submitted_filters(), "new", form, status=422)
+        return render_page(submitted_filters(), new_panel(form), 422)
     task_data.create_task(form.to_data())
     flash("Tâche ajoutée.")
     return back_to_board()
@@ -30,7 +37,7 @@ def update(task_id):
     task = find_task_or_404(task_id)
     form = TaskForm()
     if not form.validate():
-        return render_page(submitted_filters(), "edit", form, task, status=422)
+        return render_page(submitted_filters(), edit_panel(task, form), 422)
     task_data.update_task(task_id, form.to_data())
     flash("Tâche enregistrée.")
     return back_to_board(task_id)

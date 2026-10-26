@@ -47,9 +47,9 @@ def decode(data, dictionary, budget):
 def object_streams(content):
     body, decoded, position, budget = [], [], 0, MAX_DECODED
     for match in STREAM.finditer(content):
-        body.append(content[position:match.start()])
+        body.append(content[position : match.start()])
         position = match.end()
-        dictionary = unescape(content[max(content.rfind(b"obj", 0, match.start()), 0):match.start()])
+        dictionary = unescape(content[max(content.rfind(b"obj", 0, match.start()), 0) : match.start()])
         if OBJECT_STREAM.search(dictionary):
             try:
                 data = decode(match.group(1), dictionary, budget)

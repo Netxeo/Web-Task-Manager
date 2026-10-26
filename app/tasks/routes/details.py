@@ -5,14 +5,21 @@ from app.tasks import bp
 from app.tasks.data import details
 from app.tasks.detail_forms import CommentForm, LinkForm, SubtaskForm
 from app.tasks.forms import TaskForm, form_values
-from app.tasks.routes.common import WRITE_LIMIT, back_to_board, find_task_or_404, render_page, submitted_filters
+from app.tasks.routes.common import (
+    WRITE_LIMIT,
+    back_to_board,
+    edit_panel,
+    find_task_or_404,
+    render_page,
+    submitted_filters,
+)
 
 TAB_OF = {"subtasks": "subtasks", "comments": "comments", "links": "resources"}
 
 
 def refuse(task, tab, form_name, form):
     edit_form = TaskForm(formdata=None, data=form_values(task))
-    return render_page(submitted_filters(), "edit", edit_form, task, tab, {form_name: form}, status=422)
+    return render_page(submitted_filters(), edit_panel(task, edit_form, tab, {form_name: form}), 422)
 
 
 def saved(task_id, tab, added, message):

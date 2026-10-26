@@ -9,8 +9,15 @@ from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
 from app.tasks.data.tags import parse_tags
 
-CONTROL_CHARACTERS = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\u200b\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]")
-PRIORITY_CHOICES = [SelectChoice(0, "Aucune"), SelectChoice(1, "Basse"), SelectChoice(2, "Moyenne"), SelectChoice(3, "Haute")]
+CONTROL_CHARACTERS = re.compile(
+    "[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\u200b\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]"
+)
+PRIORITY_CHOICES = [
+    SelectChoice(0, "Aucune"),
+    SelectChoice(1, "Basse"),
+    SelectChoice(2, "Moyenne"),
+    SelectChoice(3, "Haute"),
+]
 STATUS_CHOICES = [
     SelectChoice("new", "Nouvelle"),
     SelectChoice("scheduled", "Planifiée"),
@@ -53,7 +60,7 @@ class TaskForm(FlaskForm):
         try:
             parse_tags(field.data or "")
         except ValueError as error:
-            raise ValidationError(str(error))
+            raise ValidationError(str(error)) from None
 
     def to_data(self):
         return {

@@ -16,6 +16,8 @@ INSTRUCTIONS = (
 PRIORITY_HELP = "Priorité : 0 aucune, 1 basse, 2 moyenne, 3 haute."
 DUE_HELP = "Échéance au format AAAA-MM-JJTHH:MM, ou vide."
 TAGS_HELP = "Tags séparés par des virgules, 5 maximum."
+STATUS_HELP = "Colonnes : new (nouvelles), scheduled (planifiées), in_progress (en cours), done (terminées)."
+FIELDS_HELP = f"{STATUS_HELP} {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}"
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 flask_app = create_app()
@@ -28,10 +30,11 @@ def run(action, *args):
         return action(*args)
 
 
-STATUS_HELP = "Colonnes : new (nouvelles), scheduled (planifiées), in_progress (en cours), done (terminées)."
-
-
-@server.tool(description=f"Liste les tâches du tableau Kanban, classées par priorité. status vide = toutes les colonnes. {STATUS_HELP} {PRIORITY_HELP}", annotations=read_only)
+@server.tool(
+    description="Liste les tâches du tableau Kanban, classées par priorité. "
+    f"status vide = toutes les colonnes. {STATUS_HELP} {PRIORITY_HELP}",
+    annotations=read_only,
+)
 def list_tasks(status="", query="", tag="", priority=""):
     return run(tools.list_tasks, status, query, tag, str(priority))
 
@@ -41,19 +44,36 @@ def get_task(task_id):
     return run(tools.get_task, task_id)
 
 
-@server.tool(description=f"Crée une tâche. Titre obligatoire, 120 caractères maximum. {STATUS_HELP} {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
+@server.tool(description=f"Crée une tâche. Titre obligatoire, 120 caractères maximum. {FIELDS_HELP}")
 def create_task(title, description="", status="new", priority="0", due_at="", tags=""):
-    values = {"title": title, "description": description, "status": status, "priority": priority, "due_at": due_at, "tags": tags}
+    values = {
+        "title": title,
+        "description": description,
+        "status": status,
+        "priority": priority,
+        "due_at": due_at,
+        "tags": tags,
+    }
     return run(tools.create_task, values)
 
 
-@server.tool(description=f"Modifie une tâche. Seuls les champs fournis changent. {STATUS_HELP} {PRIORITY_HELP} {DUE_HELP} {TAGS_HELP}")
+@server.tool(description=f"Modifie une tâche. Seuls les champs fournis changent. {FIELDS_HELP}")
 def update_task(task_id, title=None, description=None, status=None, priority=None, due_at=None, tags=None):
-    changes = {"title": title, "description": description, "status": status, "priority": priority, "due_at": due_at, "tags": tags}
+    changes = {
+        "title": title,
+        "description": description,
+        "status": status,
+        "priority": priority,
+        "due_at": due_at,
+        "tags": tags,
+    }
     return run(tools.update_task, task_id, changes)
 
 
-@server.tool(description=f"Déplace une tâche dans une autre colonne du Kanban. {STATUS_HELP}", annotations=ToolAnnotations(idempotent_hint=True))
+@server.tool(
+    description=f"Déplace une tâche dans une autre colonne du Kanban. {STATUS_HELP}",
+    annotations=ToolAnnotations(idempotent_hint=True),
+)
 def move_task(task_id, status):
     return run(tools.move_task, task_id, status)
 
@@ -68,7 +88,10 @@ def add_comment(task_id, body):
     return run(tools.add_comment, task_id, body)
 
 
-@server.tool(description="Supprime définitivement une tâche avec ses sous-tâches, commentaires, liens et fichiers.", annotations=ToolAnnotations(destructive_hint=True))
+@server.tool(
+    description="Supprime définitivement une tâche avec ses sous-tâches, commentaires, liens et fichiers.",
+    annotations=ToolAnnotations(destructive_hint=True),
+)
 def delete_task(task_id):
     return run(tools.delete_task, task_id)
 

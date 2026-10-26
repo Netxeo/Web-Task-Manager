@@ -12,7 +12,9 @@ EMPTY = {"title": "", "description": "", "status": "new", "priority": "0", "due_
 
 def test_tools_cover_the_whole_task_life(app):
     with app.app_context():
-        task = tools.create_task({**EMPTY, "title": "Appeler le comptable", "priority": "3", "due_at": "2030-05-02T10:00", "tags": "admin"})
+        task = tools.create_task(
+            {**EMPTY, "title": "Appeler le comptable", "priority": "3", "due_at": "2030-05-02T10:00", "tags": "admin"}
+        )
         assert (task["priority"], task["status"]) == ("Haute", "scheduled")
         task = tools.update_task(task["id"], {"description": "Bilan annuel", "title": None})
         assert task["description"] == "Bilan annuel" and task["tags"] == ["admin"]
@@ -53,7 +55,16 @@ def test_mcp_server_exposes_tools(tmp_path, monkeypatch):
         return names, result, listed
 
     names, result, listed = asyncio.run(scenario())
-    assert names == {"list_tasks", "get_task", "create_task", "update_task", "move_task", "add_subtask", "add_comment", "delete_task"}
+    assert names == {
+        "list_tasks",
+        "get_task",
+        "create_task",
+        "update_task",
+        "move_task",
+        "add_subtask",
+        "add_comment",
+        "delete_task",
+    }
     assert result.is_error is False
     assert "Depuis l'IA" in json.dumps(listed.model_dump(), ensure_ascii=False)
 

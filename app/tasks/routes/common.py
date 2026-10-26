@@ -19,7 +19,7 @@ def find_task_or_404(task_id):
 
 def submitted_filters():
     prefix = "filter_"
-    return parse_filters({key[len(prefix):]: value for key, value in request.form.items() if key.startswith(prefix)})
+    return parse_filters({key[len(prefix) :]: value for key, value in request.form.items() if key.startswith(prefix)})
 
 
 def back_to_board(task_id=None, tab=None):
@@ -35,7 +35,12 @@ def planner_context(filters):
     monday = week_start(filters["week"])
     dated, backlog = task_data.list_week(filters, *week_bounds(monday))
     days = [(day, [task for task in dated if task["due_at"][:10] == day.isoformat()]) for day in week_days(monday)]
-    return {"days": days, "backlog": backlog, "previous_week": shift_week(monday, -1), "next_week": shift_week(monday, 1)}
+    return {
+        "days": days,
+        "backlog": backlog,
+        "previous_week": shift_week(monday, -1),
+        "next_week": shift_week(monday, 1),
+    }
 
 
 def detail_context(task, forms):
@@ -55,12 +60,25 @@ def detail_context(task, forms):
     }
 
 
-def render_page(filters, panel=None, form=None, editing=None, tab="details", forms=None, status=200):
-    context = planner_context(filters) if filters["view"] == "planner" else {
-        "columns": task_data.list_board(filters, STATUSES)
+def new_panel(form):
+    return {"panel": "new", "form": form}
+
+
+def edit_panel(task, form, tab="details", forms=None):
+    return {
+        "panel": "edit",
+        "form": form,
+        "editing": task,
+        "tab": tab if tab in TABS else "details",
+        **detail_context(task, forms or {}),
     }
-    if editing:
-        context.update(detail_context(editing, forms or {}))
+
+
+def render_page(filters, panel=None, status=200):
+    if filters["view"] == "planner":
+        context = planner_context(filters)
+    else:
+        context = {"columns": task_data.list_board(filters, STATUSES)}
     page = render_template(
         "tasks/index.html",
         filters=filters,
@@ -69,12 +87,8 @@ def render_page(filters, panel=None, form=None, editing=None, tab="details", for
         priorities=PRIORITIES,
         views=VIEWS,
         tabs=TABS,
-        tab=tab if tab in TABS else "details",
         tags=task_data.list_tags(),
         total=task_data.count_tasks(),
-        panel=panel,
-        form=form,
-        editing=editing,
-        **context,
+        **{"panel": None, "form": None, "editing": None, "tab": "details", **context, **(panel or {})},
     )
     return page, status

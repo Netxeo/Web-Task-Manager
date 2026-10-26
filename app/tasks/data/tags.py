@@ -17,7 +17,10 @@ def parse_tags(text):
             continue
         name = normalize_tag(raw)
         if name is None:
-            raise ValueError(f"Tag invalide : « {raw.strip()[:24]} ». Lettres, chiffres, espaces, - et _ uniquement, 24 caractères maximum.")
+            raise ValueError(
+                f"Tag invalide : « {raw.strip()[:24]} ». "
+                "Lettres, chiffres, espaces, - et _ uniquement, 24 caractères maximum."
+            )
         if name not in names:
             names.append(name)
     if len(names) > MAX_TAGS_PER_TASK:

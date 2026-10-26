@@ -119,3 +119,10 @@ Journal de développement du projet, dans l'ordre chronologique.
 - Vérifié sur 521 PDF réels (dont 100 avec flux compressés) : aucun refusé à tort. Un PDF avec JavaScript caché dans un flux compressé est bien refusé.
 - **Bug trouvé en testant de vrais fichiers** : tout envoi de plus de 16 Ko était refusé (413), parce que la limite mémoire des formulaires était plus petite que les morceaux lus par Werkzeug (64 Ko). Limite passée à 128 Ko, avec un test qui envoie une photo et un PDF de plusieurs Mo.
 - 99 tests automatisés.
+
+### 19h15 · Qualité du code
+- Revue avec `ruff`, `radon` (complexité) et `vulture` (code mort) : aucune fonction trop complexe, aucun code mort.
+- Style uniformisé avec `ruff format` (lignes de 120 caractères maximum) et règles `ruff` ajoutées au projet, vérifiées par GitHub Actions à chaque push.
+- `render_page` simplifiée : elle prenait 7 paramètres, la fiche ouverte est maintenant décrite par `new_panel` ou `edit_panel`.
+- Erreur de tag relancée sans la trace interne (`raise ... from None`).
+- 99 tests automatisés, `ruff`, `bandit` et `pip-audit` sans alerte.

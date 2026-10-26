@@ -42,7 +42,7 @@ En plus :
 | Validation | WTForms (via Flask-WTF) |
 | Sécurité | Flask-WTF (CSRF), Flask-Limiter (limitation de débit), Pillow (nettoyage des images), en-têtes HTTP stricts |
 | IA | SDK MCP officiel (`mcp`) |
-| Tests | pytest, pip-audit |
+| Tests et qualité | pytest, pip-audit, ruff (style et erreurs) |
 
 ## Installation
 
@@ -132,6 +132,8 @@ Pour que l'assistant puisse seulement consulter les tâches sans rien modifier, 
 
 ```bash
 pip install -r requirements-dev.txt
+ruff check .
+ruff format --check .
 pytest
 pip-audit -r requirements-ai.txt
 ```
