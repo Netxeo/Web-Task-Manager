@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <h1>Toutes les tâches</h1>
+</header>
+
+{% if tasks %}
+<ul class="task-list">
+    {% for task in tasks %}
+    <li class="task-row{% if task.is_done %} is-done{% endif %}">
+        <span class="task-title">{{ task.title }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty-state">Aucune tâche pour l'instant.</p>
+{% endif %}
+{% endblock %}
