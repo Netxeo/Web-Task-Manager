@@ -1,0 +1,21 @@
+{% macro field(form_field, hint="") -%}
+{% set ids = [] %}
+{% if hint %}{% set _ = ids.append(form_field.id ~ "-hint") %}{% endif %}
+{% if form_field.errors %}{% set _ = ids.append(form_field.id ~ "-error") %}{% endif %}
+<div class="field{% if form_field.errors %} has-error{% endif %}">
+    {{ form_field.label(class="field-label") }}
+    {% if ids %}
+    {{ form_field(class="field-input", aria_describedby=ids | join(" "), aria_invalid="true" if form_field.errors else "false") }}
+    {% else %}
+    {{ form_field(class="field-input") }}
+    {% endif %}
+    {% if hint %}<p class="field-hint" id="{{ form_field.id }}-hint">{{ hint }}</p>{% endif %}
+    {% if form_field.errors %}<p class="field-error" id="{{ form_field.id }}-error">{{ form_field.errors | join(" ") }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro filter_fields(filters, prefix="") -%}
+{% for name, value in query_args(filters).items() %}
+<input type="hidden" name="{{ prefix ~ name }}" value="{{ value }}">
+{% endfor %}
+{%- endmacro %}

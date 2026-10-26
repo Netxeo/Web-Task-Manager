@@ -30,5 +30,20 @@ Journal de développement du projet, dans l'ordre chronologique.
 - Écartées : Inter (I majuscule et l minuscule identiques), Lexend (trop large pour une liste), IBM Plex Sans (plus froide), Source Sans 3 (bonne, mais I et l proches).
 - Polices hébergées dans le projet (licence SIL OFL 1.1 jointe) : aucune requête vers un service tiers, compatible avec la CSP `font-src 'self'`. Graisses 400 et 600 uniquement, pour rester léger à l'œil.
 
+### 13h50 à 14h00 · Fonctionnalités et bonus
+- Les cinq fonctionnalités du cahier des charges : afficher, ajouter (ajout rapide ou formulaire complet), modifier dans un panneau latéral, supprimer avec confirmation, marquer comme terminée ou non d'un clic.
+- Tous les bonus sauf l'IA : recherche (titre et description), filtres par statut, priorité et tag, tri (récentes, échéance, priorité, titre), priorités à 3 niveaux, tags, échéance date et heure avec alerte de retard, interface responsive.
+- Composants réutilisables : macros Jinja2 pour la ligne de tâche, les badges, les champs de formulaire et les icônes.
+- Schéma étendu : priorité et échéance avec contraintes `CHECK`, tables `tags` et `task_tags` reliées par clés étrangères avec suppression en cascade, tags orphelins nettoyés automatiquement.
+- Validation serveur avec WTForms (messages en français) : longueurs, priorité dans la liste, date valide, tags limités à 5 et à un jeu de caractères sûr, caractères de contrôle supprimés.
+- Recherche : les caractères `%` et `_` sont échappés pour être cherchés tels quels, jamais interprétés par SQL.
+- Tri : la valeur reçue est comparée à une liste fermée, aucune donnée de l'utilisateur n'entre dans le texte de la requête SQL.
+- Les filtres actifs sont conservés après chaque action, sans paramètre de redirection libre (pas de redirection ouverte possible).
+- Limite de 60 écritures par minute et par adresse IP.
+- JavaScript minimal et facultatif : boîte de confirmation native `<dialog>`, tri automatique, touche Échap pour fermer le panneau. Tout fonctionne aussi sans JavaScript.
+- Accessibilité : contrastes AA vérifiés, zones cliquables de 44 px, focus visible, libellés sur tous les champs, lien d'évitement, état « terminé » indiqué par une coche et pas seulement par la couleur.
+- Icônes Lucide (licence ISC) intégrées au projet.
+- 40 tests automatisés : fonctionnalités, validation, filtres et sécurité (injection SQL, XSS, CSRF, méthodes HTTP, taille des requêtes, limitation de débit, pages d'erreur).
+
 ### Prochaine étape
-Les cinq fonctionnalités du cahier des charges : afficher, ajouter, modifier, supprimer, marquer comme terminée.
+Le serveur MCP pour piloter les tâches depuis un assistant IA.

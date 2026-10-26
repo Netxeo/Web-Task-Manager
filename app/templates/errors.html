@@ -2,9 +2,11 @@
 
 {% block title %}Erreur {{ code }}{% endblock %}
 
+{% block sidebar %}{% endblock %}
+
 {% block content %}
 <section class="error-page">
-    <p class="error-code">{{ code }}</p>
+    <p class="error-code">Erreur {{ code }}</p>
     <h1>{{ message }}</h1>
     <a class="button" href="{{ url_for('tasks.index') }}">Retour aux tâches</a>
 </section>

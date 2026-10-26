@@ -1,0 +1,121 @@
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.toolbar h1 {
+    margin-right: auto;
+}
+
+.search,
+.sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.search {
+    position: relative;
+}
+
+.search .icon {
+    position: absolute;
+    left: var(--space-3);
+    color: var(--color-ink-muted);
+    pointer-events: none;
+}
+
+.search-input {
+    width: 220px;
+    padding: 0 var(--space-3) 0 36px;
+}
+
+.sort-label {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+}
+
+.sort-select {
+    padding: 0 var(--space-2);
+}
+
+.quick-add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-6);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.quick-add:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-selected);
+}
+
+.quick-add-icon {
+    display: flex;
+    color: var(--color-primary);
+}
+
+.quick-add-input {
+    flex: 1;
+    min-width: 12rem;
+    border: 0;
+    background: transparent;
+}
+
+.quick-add-input:focus-visible {
+    outline: none;
+}
+
+.quick-add-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    text-decoration: none;
+}
+
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: calc(var(--space-2) * -1) 0 var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+}
+
+.badge-filter {
+    min-height: 32px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    color: var(--color-ink);
+    background: var(--color-surface);
+}
+
+.clear-filters {
+    font-size: var(--text-sm);
+}
+
+@media (max-width: 767px) {
+    .toolbar h1 {
+        width: 100%;
+    }
+
+    .search {
+        flex: 1;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+}

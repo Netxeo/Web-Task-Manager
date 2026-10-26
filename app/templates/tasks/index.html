@@ -1,19 +1,44 @@
 {% extends "base.html" %}
+{% from "components/task_row.html" import task_row %}
 
 {% block content %}
-<header class="page-header">
-    <h1>Toutes les tâches</h1>
-</header>
+{% include "partials/toolbar.html" %}
+
+{% set editing_id = editing.id if editing else None %}
+{% set open_tasks = tasks | rejectattr("is_done") | list %}
+{% set done_tasks = tasks | selectattr("is_done") | list %}
 
 {% if tasks %}
-<ul class="task-list">
-    {% for task in tasks %}
-    <li class="task-row{% if task.is_done %} is-done{% endif %}">
-        <span class="task-title">{{ task.title }}</span>
-    </li>
-    {% endfor %}
-</ul>
+    {% if open_tasks %}
+    <ul class="task-list" aria-label="Tâches à faire">
+        {% for task in open_tasks %}{{ task_row(task, filters, priorities, editing_id) }}{% endfor %}
+    </ul>
+    {% endif %}
+    {% if done_tasks %}
+    <section class="done-group" aria-labelledby="done-heading">
+        <h2 class="group-heading" id="done-heading">Terminées <span class="count">{{ done_tasks | length }}</span></h2>
+        <ul class="task-list">
+            {% for task in done_tasks %}{{ task_row(task, filters, priorities, editing_id) }}{% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+{% elif filters_active %}
+    <div class="empty-state">
+        <p class="empty-title">Aucune tâche ne correspond à ces filtres.</p>
+        <a href="{{ url_for('tasks.index', **query_args(filters, q='', tag='', priority=0)) }}">Effacer les filtres</a>
+    </div>
+{% elif counts.all %}
+    <div class="empty-state">
+        <p class="empty-title">{{ "Rien à faire, tout est terminé." if filters.status == "todo" else "Aucune tâche terminée pour l'instant." }}</p>
+    </div>
 {% else %}
-<p class="empty-state">Aucune tâche pour l'instant.</p>
+    <div class="empty-state">
+        <p class="empty-title">Aucune tâche pour l'instant.</p>
+        <p>Écris ta première tâche dans le champ ci-dessus et appuie sur Entrée.</p>
+    </div>
 {% endif %}
+{% endblock %}
+
+{% block panel %}
+{% if panel %}{% include "partials/panel.html" %}{% endif %}
 {% endblock %}

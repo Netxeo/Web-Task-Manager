@@ -1,0 +1,36 @@
+{% from "components/icon.html" import icon %}
+{% from "components/fields.html" import field, filter_fields %}
+
+{% set is_edit = panel == "edit" %}
+{% set close_url = url_for('tasks.index', **query_args(filters)) %}
+<aside class="panel" aria-labelledby="panel-title">
+    <header class="panel-header">
+        <h2 id="panel-title">{{ "Modifier la tâche" if is_edit else "Nouvelle tâche" }}</h2>
+        <a class="icon-button" href="{{ close_url }}" aria-label="Fermer le panneau">{{ icon("x") }}</a>
+    </header>
+
+    <form class="panel-form" method="post" action="{{ url_for('tasks.update', task_id=editing.id) if is_edit else url_for('tasks.create') }}">
+        {{ form.csrf_token }}
+        {{ filter_fields(filters, "filter_") }}
+        {{ field(form.title) }}
+        {{ field(form.description) }}
+        <div class="field-row">
+            {{ field(form.priority) }}
+            {{ field(form.due_at) }}
+        </div>
+        {{ field(form.tags, "Séparés par des virgules, 5 maximum.") }}
+        <div class="panel-actions">
+            <button class="button" type="submit" data-busy-label="Enregistrement…">{{ "Enregistrer" if is_edit else "Ajouter la tâche" }}</button>
+            <a class="button button-ghost" href="{{ close_url }}">Annuler</a>
+        </div>
+    </form>
+
+    {% if is_edit %}
+    <form class="panel-danger" method="post" action="{{ url_for('tasks.delete', task_id=editing.id) }}" data-confirm="Supprimer « {{ editing.title }} » ? Cette action est définitive.">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {{ filter_fields(filters, "filter_") }}
+        <button class="button button-danger" type="submit">{{ icon("trash-2", 16) }}Supprimer la tâche</button>
+    </form>
+    <p class="panel-meta">Créée : <time datetime="{{ editing.created_at }}">{{ editing.created_at[:16] | due_label }}</time></p>
+    {% endif %}
+</aside>

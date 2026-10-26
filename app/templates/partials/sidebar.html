@@ -1,6 +1,38 @@
-<aside class="app-sidebar">
-    <a class="brand" href="{{ url_for('tasks.index') }}">Web Task Manager</a>
-    <nav class="sidebar-nav" aria-label="Vues">
-        <a class="sidebar-link is-active" href="{{ url_for('tasks.index') }}" aria-current="page">Toutes les tâches</a>
+{% from "components/icon.html" import icon %}
+
+{% set views = [("all", "Toutes", "list", counts.all), ("todo", "À faire", "circle", counts.todo), ("done", "Terminées", "circle-check-big", counts.done)] %}
+<aside class="sidebar">
+    <a class="brand" href="{{ url_for('tasks.index') }}">{{ icon("list-todo", 20) }}Web Task Manager</a>
+
+    <nav class="sidebar-section" aria-label="Statut">
+        {% for key, label, icon_name, total in views %}
+        <a class="sidebar-link{% if filters.status == key %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, status=key)) }}"{% if filters.status == key %} aria-current="page"{% endif %}>
+            {{ icon(icon_name) }}<span>{{ label }}</span><span class="count">{{ total }}</span>
+        </a>
+        {% endfor %}
     </nav>
+
+    <div class="sidebar-filters">
+        <nav class="sidebar-section" aria-labelledby="sidebar-priorities">
+            <h2 class="sidebar-heading" id="sidebar-priorities">Priorité</h2>
+            {% for level in [3, 2, 1] %}
+            {% set active = filters.priority == level %}
+            <a class="sidebar-link{% if active %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, priority=0 if active else level)) }}"{% if active %} aria-current="true"{% endif %}>
+                <span class="dot priority-{{ level }}" aria-hidden="true"></span><span>{{ priorities[level] }}</span>
+            </a>
+            {% endfor %}
+        </nav>
+
+        {% if tags %}
+        <nav class="sidebar-section" aria-labelledby="sidebar-tags">
+            <h2 class="sidebar-heading" id="sidebar-tags">Tags</h2>
+            {% for tag in tags %}
+            {% set active = filters.tag == tag.name %}
+            <a class="sidebar-link{% if active %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, tag='' if active else tag.name)) }}"{% if active %} aria-current="true"{% endif %}>
+                {{ icon("tag", 16) }}<span>{{ tag.name }}</span><span class="count">{{ tag.total }}</span>
+            </a>
+            {% endfor %}
+        </nav>
+        {% endif %}
+    </div>
 </aside>

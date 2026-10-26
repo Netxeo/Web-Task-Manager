@@ -5,17 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Tâches{% endblock %} · Web Task Manager</title>
     <link rel="preload" href="{{ url_for('static', filename='fonts/atkinson-hyperlegible-next-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    {% for sheet in ["fonts", "tokens", "base", "layout", "sidebar", "forms", "toolbar", "tasks", "panel"] %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ sheet ~ '.css') }}">
+    {% endfor %}
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 </head>
 <body>
-    <div class="app">
-        {% include "partials/sidebar.html" %}
-        <main class="app-main" id="contenu">
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <div class="app{% if panel %} has-panel{% endif %}">
+        {% block sidebar %}{% include "partials/sidebar.html" %}{% endblock %}
+        <main class="main" id="contenu">
+            {% include "partials/flashes.html" %}
             {% block content %}{% endblock %}
         </main>
+        {% block panel %}{% endblock %}
     </div>
+    <dialog class="confirm" id="confirm-dialog" aria-labelledby="confirm-message">
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+            <button class="button button-ghost" type="button" value="cancel" data-confirm-cancel>Annuler</button>
+            <button class="button button-danger" type="button" data-confirm-accept>Supprimer</button>
+        </div>
+    </dialog>
 </body>
 </html>
