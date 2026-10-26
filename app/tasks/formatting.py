@@ -6,7 +6,15 @@ from app.tasks.forms import DUE_FORMAT
 
 bp.add_app_template_global(query_args)
 
+DAYS = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
+MONTH_NAMES = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
 MONTHS = ("janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc.")
+
+
+@bp.app_template_global("today_label")
+def today_label():
+    today = date.today()
+    return f"{DAYS[today.weekday()]} {today.day} {MONTH_NAMES[today.month - 1]}"
 
 
 def parse_due(value):

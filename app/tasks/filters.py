@@ -1,6 +1,6 @@
 from app.tasks.tags import normalize_tag
 
-STATUSES = ("all", "todo", "done")
+VIEWS = {"today": "Aujourd'hui", "upcoming": "À venir", "todo": "À faire", "done": "Terminées"}
 PRIORITIES = {1: "Basse", 2: "Moyenne", 3: "Haute"}
 SORTS = {
     "recent": ("Plus récentes", "t.created_at DESC"),
@@ -8,7 +8,7 @@ SORTS = {
     "priority": ("Priorité", "t.priority DESC, t.created_at DESC"),
     "title": ("Titre", "t.title COLLATE NOCASE ASC"),
 }
-DEFAULTS = {"status": "all", "q": "", "tag": "", "priority": 0, "sort": "recent"}
+DEFAULTS = {"view": "todo", "q": "", "tag": "", "priority": 0, "sort": "recent"}
 SEARCH_MAX_LENGTH = 100
 
 
@@ -17,10 +17,10 @@ def parse_priority(value):
 
 
 def parse_filters(args):
-    status = args.get("status", "")
+    view = args.get("view", "")
     sort = args.get("sort", "")
     return {
-        "status": status if status in STATUSES else DEFAULTS["status"],
+        "view": view if view in VIEWS else DEFAULTS["view"],
         "q": " ".join(args.get("q", "").split())[:SEARCH_MAX_LENGTH],
         "tag": normalize_tag(args.get("tag", "")) or "",
         "priority": parse_priority(args.get("priority", "")),

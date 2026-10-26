@@ -1,9 +1,10 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 
-from app.extensions import limiter
+from app.core.extensions import limiter
 from app.tasks import bp, repository
-from app.tasks.filters import PRIORITIES, SORTS, has_active_filters, parse_filters, query_args
+from app.tasks.filters import PRIORITIES, SORTS, VIEWS, has_active_filters, parse_filters, query_args
 from app.tasks.forms import TaskForm, form_values
+from app.tasks.moments import group_tasks
 
 WRITE_LIMIT = "60 per minute"
 
@@ -16,10 +17,12 @@ def find_task_or_404(task_id):
 
 
 def render_board(filters, panel=None, form=None, editing=None, status=200):
+    tasks = repository.list_tasks(filters)
     page = render_template(
         "tasks/index.html",
-        tasks=repository.list_tasks(filters),
+        groups=group_tasks(tasks, filters["view"]),
         counts=repository.count_tasks(),
+        views=VIEWS,
         tags=repository.list_tags(),
         filters=filters,
         filters_active=has_active_filters(filters),
@@ -59,8 +62,10 @@ def create():
     form = TaskForm()
     if not form.validate():
         return render_board(submitted_filters(), "new", form, status=422)
-    repository.create_task(form.to_data())
-    flash("Tâche ajoutée.")
+    data = form.to_data()
+    repository.create_task(data)
+    hidden = submitted_filters()["view"] in ("today", "upcoming", "done") and not data["due_at"]
+    flash("Tâche ajoutée dans « À faire », car elle n'a pas d'échéance." if hidden else "Tâche ajoutée.")
     return back_to_list()
 
 
@@ -81,6 +86,7 @@ def update(task_id):
 def toggle(task_id):
     if not repository.toggle_task(task_id):
         abort(404)
+    flash("Tâche terminée." if repository.get_task(task_id)["is_done"] else "Tâche rouverte.")
     return back_to_list()
 
 

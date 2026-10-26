@@ -156,7 +156,7 @@
     color: var(--color-primary);
 }
 
-.done-group {
+.task-group + .task-group {
     margin-top: var(--space-8);
 }
 
@@ -165,11 +165,22 @@
     align-items: center;
     gap: var(--space-2);
     padding-bottom: var(--space-2);
+    font-weight: 600;
     font-size: var(--text-xs);
     color: var(--color-ink-muted);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     border-bottom: 1px solid var(--color-line-soft);
+}
+
+.group-overdue .group-heading {
+    color: var(--color-danger);
+}
+
+.done-link {
+    display: inline-block;
+    margin-top: var(--space-6);
+    font-size: var(--text-sm);
 }
 
 .empty-state {

@@ -7,7 +7,7 @@ def test_sql_injection_is_stored_as_text(app, add_task, page):
     add_task(payload)
     with app.app_context():
         assert repository.get_task(1)["title"] == payload
-        assert repository.count_tasks()["all"] == 1
+        assert repository.count_tasks()["total"] == 1
     assert page("/?q=' OR 1=1 --").count("task-link") == 0
 
 

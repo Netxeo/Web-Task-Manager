@@ -1,41 +1,40 @@
 {% extends "base.html" %}
 {% from "components/task_row.html" import task_row %}
 
+{% set empty_messages = {
+    "today": ("Tout est fait pour aujourd'hui.", "Belle journée. Les prochaines tâches sont dans « À venir ».") if counts.done_today else ("Rien de prévu aujourd'hui.", "Ajoute une échéance à une tâche pour la retrouver ici."),
+    "upcoming": ("Rien de prévu dans les 7 prochains jours.", "Les tâches avec une échéance proche apparaîtront ici."),
+    "todo": ("Rien à faire pour l'instant.", "Écris ta première tâche dans le champ ci-dessus et appuie sur Entrée."),
+    "done": ("Aucune tâche terminée pour l'instant.", "Coche une tâche pour la retrouver ici."),
+} %}
+
 {% block content %}
 {% include "partials/toolbar.html" %}
 
 {% set editing_id = editing.id if editing else None %}
-{% set open_tasks = tasks | rejectattr("is_done") | list %}
-{% set done_tasks = tasks | selectattr("is_done") | list %}
 
-{% if tasks %}
-    {% if open_tasks %}
-    <ul class="task-list" aria-label="Tâches à faire">
-        {% for task in open_tasks %}{{ task_row(task, filters, priorities, editing_id) }}{% endfor %}
+{% for key, label, items in groups %}
+<section class="task-group group-{{ key }}" aria-labelledby="group-{{ key }}">
+    <h2 class="group-heading" id="group-{{ key }}">{{ label }} <span class="count">{{ items | length }}</span></h2>
+    <ul class="task-list">
+        {% for task in items %}{{ task_row(task, filters, priorities, editing_id) }}{% endfor %}
     </ul>
-    {% endif %}
-    {% if done_tasks %}
-    <section class="done-group" aria-labelledby="done-heading">
-        <h2 class="group-heading" id="done-heading">Terminées <span class="count">{{ done_tasks | length }}</span></h2>
-        <ul class="task-list">
-            {% for task in done_tasks %}{{ task_row(task, filters, priorities, editing_id) }}{% endfor %}
-        </ul>
-    </section>
-    {% endif %}
-{% elif filters_active %}
-    <div class="empty-state">
-        <p class="empty-title">Aucune tâche ne correspond à ces filtres.</p>
-        <a href="{{ url_for('tasks.index', **query_args(filters, q='', tag='', priority=0)) }}">Effacer les filtres</a>
-    </div>
-{% elif counts.all %}
-    <div class="empty-state">
-        <p class="empty-title">{{ "Rien à faire, tout est terminé." if filters.status == "todo" else "Aucune tâche terminée pour l'instant." }}</p>
-    </div>
+</section>
 {% else %}
-    <div class="empty-state">
-        <p class="empty-title">Aucune tâche pour l'instant.</p>
-        <p>Écris ta première tâche dans le champ ci-dessus et appuie sur Entrée.</p>
-    </div>
+<div class="empty-state">
+    {% if filters_active %}
+    <p class="empty-title">Aucune tâche ne correspond à ces filtres.</p>
+    <a href="{{ url_for('tasks.index', **query_args(filters, q='', tag='', priority=0)) }}">Effacer les filtres</a>
+    {% else %}
+    {% set title, hint = empty_messages[filters.view] %}
+    <p class="empty-title">{{ title }}</p>
+    <p>{{ hint }}</p>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% if filters.view == "todo" and counts.done and not filters_active %}
+<a class="done-link" href="{{ url_for('tasks.index', **query_args(filters, view='done')) }}">Voir les {{ counts.done }} tâches terminées</a>
 {% endif %}
 {% endblock %}
 

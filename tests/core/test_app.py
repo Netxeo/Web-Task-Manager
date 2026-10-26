@@ -3,14 +3,14 @@ import sqlite3
 import pytest
 
 from app import create_app
-from app.db import get_db
-from app.security import SECURITY_HEADERS
+from app.core.db import get_db
+from app.core.security import SECURITY_HEADERS
 
 
 def test_index_shows_empty_state(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert "Aucune tâche" in response.get_data(as_text=True)
+    assert "Rien à faire pour l&#39;instant." in response.get_data(as_text=True)
 
 
 def test_unknown_page_returns_404(client):

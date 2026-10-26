@@ -78,5 +78,5 @@ def test_edit_panel_is_prefilled(add_task, page):
 
 
 def test_redirect_keeps_current_filters(add_task):
-    response = add_task("Filtrée", priority="3", filter_status="todo", filter_tag="admin", next="https://evil.example")
-    assert response.headers["Location"] == "/?status=todo&tag=admin"
+    response = add_task("Filtrée", priority="3", filter_view="done", filter_tag="admin", next="https://evil.example")
+    assert response.headers["Location"] == "/?view=done&tag=admin"

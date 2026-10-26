@@ -14,9 +14,9 @@ def titles(html):
     return [title for title in ("Écrire le rapport", "Arroser les plantes", "Payer 100% de la facture", "Lire un livre") if title in html]
 
 
-def test_status_filter(seeded, page):
-    assert titles(page("/?status=done")) == ["Lire un livre"]
-    assert "Lire un livre" not in page("/?status=todo")
+def test_status_views(seeded, page):
+    assert titles(page("/?view=done")) == ["Lire un livre"]
+    assert "Lire un livre" not in page("/?view=todo")
 
 
 def test_search_matches_title_and_description(seeded, page):
@@ -36,19 +36,19 @@ def test_tag_and_priority_filters(seeded, page):
 
 
 def test_sort_by_due_date_puts_undated_last(seeded, page):
-    html = page("/?sort=due&status=todo")
+    html = page("/?sort=due")
     assert html.index("Arroser les plantes") < html.index("Écrire le rapport") < html.index("Payer 100%")
 
 
 def test_sort_by_priority(seeded, page):
-    html = page("/?sort=priority&status=todo")
+    html = page("/?sort=priority")
     assert html.index("Écrire le rapport") < html.index("Arroser les plantes") < html.index("Payer 100%")
 
 
 def test_invalid_parameters_fall_back_to_defaults(seeded, client):
-    response = client.get("/?status=hack&sort=id;DROP&priority=7&tag=<b>")
+    response = client.get("/?view=hack&sort=id;DROP&priority=7&tag=<b>")
     assert response.status_code == 200
-    assert len(titles(response.get_data(as_text=True))) == 4
+    assert len(titles(response.get_data(as_text=True))) == 3
 
 
 def test_empty_search_shows_reset_link(seeded, page):

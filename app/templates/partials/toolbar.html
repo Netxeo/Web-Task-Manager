@@ -1,9 +1,20 @@
 {% from "components/icon.html" import icon %}
 {% from "components/fields.html" import filter_fields %}
 
-{% set titles = {"all": "Toutes les tâches", "todo": "À faire", "done": "Terminées"} %}
+{% set planned = counts.today + counts.done_today %}
 <header class="toolbar">
-    <h1>{{ titles[filters.status] }}</h1>
+    <div class="page-title">
+        <h1>{{ views[filters.view] }}</h1>
+        <p class="today-line">
+            <span class="today-date">{{ today_label() }}</span>
+            {% if planned %}
+            <span class="today-progress">
+                <progress value="{{ counts.done_today }}" max="{{ planned }}" aria-hidden="true"></progress>
+                <span>{{ counts.done_today }} sur {{ planned }} faites aujourd'hui</span>
+            </span>
+            {% endif %}
+        </p>
+    </div>
 
     <form class="search" method="get" action="{{ url_for('tasks.index') }}" role="search">
         {{ filter_fields(dict(filters, q="")) }}

@@ -2,9 +2,9 @@ from pathlib import Path
 
 from flask import Flask
 
-from app import db, errors, security
-from app.config import Config
-from app.extensions import csrf, limiter
+from app.core import db, errors, security
+from app.core.config import Config
+from app.core.extensions import csrf, limiter
 from app.tasks import bp as tasks_bp
 
 

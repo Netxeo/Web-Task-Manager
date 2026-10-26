@@ -57,3 +57,16 @@ Journal de développement du projet, dans l'ordre chronologique.
 ### 14h10 · Documentation
 - README complet : fonctionnalités, installation, branchement de l'assistant IA, architecture, choix techniques, tableau de sécurité, limites connues, captures.
 - Identifiants des tâches en `AUTOINCREMENT` pour qu'un identifiant supprimé ne soit jamais réattribué à une autre tâche.
+
+### 14h15 à 14h35 · Recherche UX et réorganisation
+- Recherche sur la psychologie des listes de tâches et les interfaces de référence (Things 3, Todoist, Microsoft To Do, Linear). Principaux enseignements :
+  - une liste groupée et des vues courtes réduisent le temps de décision (lois de Hick et de Miller) ;
+  - montrer la progression motive à terminer (gradient d'objectif, Kivetz et al., 2006) ;
+  - les petites victoires sont le premier moteur de motivation, et un revers pèse 2 à 3 fois plus qu'un progrès (Amabile & Kramer) ;
+  - l'idée qu'on se souvient mieux des tâches inachevées (effet Zeigarnik) n'est pas confirmée par la méta-analyse de Ghibellini & Meier (2025), contrairement à la tendance à reprendre une tâche interrompue (effet Ovsiankina).
+- Nouvelles vues : Aujourd'hui (en retard et du jour), À venir (7 prochains jours), À faire, Terminées.
+- Liste groupée par moment : En retard, Aujourd'hui, Demain, Dans les 7 jours, Plus tard, Sans échéance. Les terminées sont groupées par date de fin.
+- En-tête avec la date du jour et la progression « X sur Y faites aujourd'hui ». Nouvelle colonne `completed_at` pour dater chaque tâche terminée.
+- Une tâche ajoutée sans échéance depuis « Aujourd'hui » indique qu'elle a rejoint « À faire », pour ne jamais donner l'impression qu'elle a disparu.
+- Réorganisation des dossiers : infrastructure dans `app/core/`, CSS rangé en `base/`, `layout/` et `components/`, licences tierces dans `licenses/`, tests rangés comme le code.
+- 51 tests automatisés.

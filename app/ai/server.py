@@ -27,9 +27,9 @@ def run(action, *args):
         return action(*args)
 
 
-@server.tool(description="Liste les tâches. status : all, todo ou done. sort : recent, due, priority ou title. " + PRIORITY_HELP, annotations=read_only)
-def list_tasks(status="all", query="", tag="", priority="", sort="recent"):
-    return run(tools.list_tasks, status, query, tag, str(priority), sort)
+@server.tool(description="Liste les tâches. view : today (en retard et du jour), upcoming (7 prochains jours), todo (toutes les tâches à faire) ou done. sort : recent, due, priority ou title. " + PRIORITY_HELP, annotations=read_only)
+def list_tasks(view="todo", query="", tag="", priority="", sort="recent"):
+    return run(tools.list_tasks, view, query, tag, str(priority), sort)
 
 
 @server.tool(description="Affiche une tâche à partir de son identifiant.", annotations=read_only)

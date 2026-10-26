@@ -18,7 +18,7 @@ def test_tools_create_update_complete_delete(app):
         assert tools.set_done(task["id"], True)["done"] is True
         assert tools.list_tasks("done", "", "", "", "recent")[0]["id"] == task["id"]
         assert tools.delete_task(task["id"])["deleted"] == task["id"]
-        assert tools.list_tasks("all", "", "", "", "recent") == []
+        assert tools.list_tasks("todo", "", "", "", "recent") == []
 
 
 def test_tools_reuse_web_validation(app):

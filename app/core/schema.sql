@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     is_done INTEGER NOT NULL DEFAULT 0 CHECK (is_done IN (0, 1)),
     priority INTEGER NOT NULL DEFAULT 0 CHECK (priority BETWEEN 0 AND 3),
     due_at TEXT CHECK (due_at IS NULL OR length(due_at) = 16),
+    completed_at TEXT CHECK (completed_at IS NULL OR length(completed_at) = 19),
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 ) STRICT;

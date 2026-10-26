@@ -22,7 +22,7 @@ def test_invalid_input_is_rejected(app, client, fields, message):
     assert response.status_code == 422
     assert message in response.get_data(as_text=True)
     with app.app_context():
-        assert repository.count_tasks()["all"] == 0
+        assert repository.count_tasks()["total"] == 0
 
 
 def test_control_characters_are_stripped(app, add_task):

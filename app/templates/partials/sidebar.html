@@ -1,13 +1,13 @@
 {% from "components/icon.html" import icon %}
 
-{% set views = [("all", "Toutes", "list", counts.all), ("todo", "À faire", "circle", counts.todo), ("done", "Terminées", "circle-check-big", counts.done)] %}
+{% set view_items = [("today", "sun", counts.today), ("upcoming", "calendar-days", counts.upcoming), ("todo", "circle", counts.todo), ("done", "circle-check-big", counts.done)] %}
 <aside class="sidebar">
     <a class="brand" href="{{ url_for('tasks.index') }}">{{ icon("list-todo", 20) }}Web Task Manager</a>
 
-    <nav class="sidebar-section" aria-label="Statut">
-        {% for key, label, icon_name, total in views %}
-        <a class="sidebar-link{% if filters.status == key %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, status=key)) }}"{% if filters.status == key %} aria-current="page"{% endif %}>
-            {{ icon(icon_name) }}<span>{{ label }}</span><span class="count">{{ total }}</span>
+    <nav class="sidebar-section" aria-label="Vues">
+        {% for key, icon_name, total in view_items %}
+        <a class="sidebar-link view-{{ key }}{% if filters.view == key %} is-active{% endif %}" href="{{ url_for('tasks.index', **query_args(filters, view=key)) }}"{% if filters.view == key %} aria-current="page"{% endif %}>
+            {{ icon(icon_name) }}<span>{{ views[key] }}</span><span class="count">{{ total }}</span>
         </a>
         {% endfor %}
     </nav>

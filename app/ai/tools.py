@@ -15,6 +15,7 @@ def describe(task):
         "done": bool(task["is_done"]),
         "priority": PRIORITIES.get(task["priority"], "Aucune"),
         "due_at": task["due_at"],
+        "completed_at": task["completed_at"],
         "tags": task["tags"],
     }
 
@@ -42,8 +43,8 @@ def as_text(values):
     }
 
 
-def list_tasks(status, query, tag, priority, sort):
-    filters = parse_filters({"status": status, "q": query, "tag": tag, "priority": priority, "sort": sort})
+def list_tasks(view, query, tag, priority, sort):
+    filters = parse_filters({"view": view, "q": query, "tag": tag, "priority": priority, "sort": sort})
     return [describe(task) for task in repository.list_tasks(filters)]
 
 
