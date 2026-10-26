@@ -11,6 +11,7 @@ from app.tasks import bp as tasks_bp
 def create_app(overrides=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
+    app.config.update(Config.from_environment())
     if overrides:
         app.config.update(overrides)
     Config.validate(app.config)

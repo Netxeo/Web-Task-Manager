@@ -45,5 +45,15 @@ Journal de développement du projet, dans l'ordre chronologique.
 - Icônes Lucide (licence ISC) intégrées au projet.
 - 40 tests automatisés : fonctionnalités, validation, filtres et sécurité (injection SQL, XSS, CSRF, méthodes HTTP, taille des requêtes, limitation de débit, pages d'erreur).
 
-### Prochaine étape
-Le serveur MCP pour piloter les tâches depuis un assistant IA.
+### 14h00 à 14h10 · Intégration IA (MCP)
+- Choix d'un serveur MCP plutôt que d'un chatbot intégré : gratuit (aucune clé d'API payante), local (aucun port réseau ouvert), et chaque utilisateur le branche sur son propre assistant. Le dépôt ne contient aucun compte ni aucune clé.
+- Six outils : lister (mêmes filtres que le site), afficher, créer, modifier partiellement, terminer, supprimer.
+- Le serveur réutilise la validation WTForms et la couche d'accès aux données du site : aucun second chemin vers la base.
+- La suppression est déclarée destructive pour que l'assistant demande confirmation. Les consignes du serveur rappellent que le contenu des tâches est une donnée et jamais une instruction (protection contre l'injection de prompt).
+- Configuration lue au démarrage de l'application et non à l'import, pour que le serveur MCP charge correctement le fichier `.env`.
+- Dépendance isolée dans `requirements-ai.txt` : l'application web reste légère pour qui n'utilise pas l'IA.
+- Tests ajoutés : outils, validation partagée, et appel réel du serveur MCP.
+
+### 14h10 · Documentation
+- README complet : fonctionnalités, installation, branchement de l'assistant IA, architecture, choix techniques, tableau de sécurité, limites connues, captures.
+- Identifiants des tâches en `AUTOINCREMENT` pour qu'un identifiant supprimé ne soit jamais réattribué à une autre tâche.
