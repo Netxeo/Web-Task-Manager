@@ -23,5 +23,12 @@ Journal de développement du projet, dans l'ordre chronologique.
 - Premiers tests automatisés : page d'accueil, 404, en-têtes de sécurité, clé secrète, contraintes de la base.
 - `pip-audit` : aucune vulnérabilité connue dans les dépendances.
 
+### 13h40 · Typographie
+- Comparaison de 5 polices sur une vraie liste de tâches : Atkinson Hyperlegible Next, Source Sans 3, IBM Plex Sans, Lexend et Inter.
+- Critère principal : une liste de tâches se lit des centaines de fois par jour, la police doit être calme et ne jamais faire hésiter entre deux caractères.
+- Choix : **Atkinson Hyperlegible Next** pour le texte, **Atkinson Hyperlegible Mono** pour les dates et compteurs. Conçue par le Braille Institute pour la lisibilité : I, l et 1 ont chacun une forme distincte, le zéro est barré pour ne jamais être confondu avec un O.
+- Écartées : Inter (I majuscule et l minuscule identiques), Lexend (trop large pour une liste), IBM Plex Sans (plus froide), Source Sans 3 (bonne, mais I et l proches).
+- Polices hébergées dans le projet (licence SIL OFL 1.1 jointe) : aucune requête vers un service tiers, compatible avec la CSP `font-src 'self'`. Graisses 400 et 600 uniquement, pour rester léger à l'œil.
+
 ### Prochaine étape
 Les cinq fonctionnalités du cahier des charges : afficher, ajouter, modifier, supprimer, marquer comme terminée.

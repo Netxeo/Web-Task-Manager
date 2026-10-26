@@ -87,6 +87,10 @@ Organisation MVC : `tasks/repository.py` porte les requêtes SQL (modèle), `tem
 - Transactions ACID et table en mode `STRICT` avec contraintes `CHECK` : la base refuse elle-même les données invalides.
 - Limite assumée : une seule écriture à la fois, parfait pour un usage individuel. L'accès aux données est isolé dans un seul module pour pouvoir passer à PostgreSQL si besoin.
 
+## Typographie
+
+Atkinson Hyperlegible Next et Atkinson Hyperlegible Mono (Braille Institute), choisies pour leur lisibilité : chaque caractère facile à confondre (I, l, 1, O, 0) a une forme distincte. Fichiers hébergés dans `app/static/fonts`, sous licence SIL Open Font License 1.1.
+
 ## Licence
 
 Code source disponible sous [PolyForm Noncommercial 1.0.0](LICENSE).

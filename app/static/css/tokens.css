@@ -12,8 +12,8 @@
     --color-page: #f6f8f9;
     --color-surface: #fdfefe;
 
-    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
